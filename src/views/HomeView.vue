@@ -1,5 +1,14 @@
 <template>
-  <div>adasdasdasdasdas dsa</div>
+  <div>
+  <!--
+    2 inputy:
+      - Gracz A
+      - Wynik gracza A
+      - Gracz B
+      - Wynik bracza B
+      ZAPISZ
+  -->
+  </div>
 </template>
 
 <script lang="ts">
