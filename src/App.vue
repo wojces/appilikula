@@ -1,5 +1,9 @@
 <template>
-  <nav><router-link to="/">Home</router-link></nav>
+  <nav>
+    <router-link to="/match">Match</router-link>
+    /
+    <router-link to="/">Home</router-link>
+  </nav>
   <router-view />
 </template>
 
