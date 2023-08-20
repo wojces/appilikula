@@ -64,7 +64,7 @@
         <button
           type="submit"
           class="btn btn-secondary mb-2"
-          @click="setMatchScore()"
+          @click="addMatchScore()"
         >
           Dodaj mecz
         </button>
@@ -102,14 +102,22 @@
           <div class="col-2">Wynik gracza B</div>
           <div class="col-1"></div>
         </div>
-        <div class="row">
-          <div class="col-1">1</div>
-          <div class="col-2">16.08.23</div>
-          <div class="col-2">Wojtek</div>
-          <div class="col-2">Dawid</div>
-          <div class="col-2">1</div>
-          <div class="col-2">0</div>
-          <div class="col-1">X</div>
+        <div class="row" v-for="(singleMatch, index) in stats" :key="index">
+          <div class="col-1">{{ index + 1 }}</div>
+          <div class="col-2">{{ singleMatch.date }}</div>
+          <div class="col-2">{{ singleMatch.playerAName }}</div>
+          <div class="col-2">{{ singleMatch.playerBName }}</div>
+          <div class="col-2">{{ singleMatch.playerAScore }}</div>
+          <div class="col-2">{{ singleMatch.playerBScore }}</div>
+          <div class="col-1">
+            <button
+              type="submit"
+              class="btn btn-secondary mb-1"
+              @click="deleteMatch(index)"
+            >
+              x
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -117,16 +125,81 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 
 let newMatchVisibility = ref(true);
 const selectedPlayerA = ref("");
 const selectedPlayerB = ref("");
 let enteredScoreA = ref(0);
 let enteredScoreB = ref(0);
+let stats = reactive([
+  {
+    matchId: 1,
+    date: "15.08.2023",
+    playerAName: "Wojtek",
+    playerBName: "Dawid",
+    playerAScore: 2,
+    playerBScore: 6,
+  },
+  {
+    matchId: 2,
+    date: "16.08.2023",
+    playerAName: "Wojtek",
+    playerBName: "Dawid",
+    playerAScore: 3,
+    playerBScore: 1,
+  },
+  {
+    matchId: 3,
+    date: "17.08.2023",
+    playerAName: "Wojtek",
+    playerBName: "Dawid",
+    playerAScore: 5,
+    playerBScore: 1,
+  },
+  {
+    matchId: 4,
+    date: "18.08.2023",
+    playerAName: "Wojtek",
+    playerBName: "Dawid",
+    playerAScore: 2,
+    playerBScore: 4,
+  },
+]);
+let newMatch = reactive({
+  matchId: 0,
+  date: "",
+  playerAName: "",
+  playerBName: "",
+  playerAScore: 0,
+  playerBScore: 0,
+});
 
-function setMatchScore() {
-  console.log(enteredScoreA.value, enteredScoreB.value);
+function addMatchScore() {
+  newMatch.matchId = stats.length + 1;
+  newMatch.date = currentDate();
+  newMatch.playerAName = selectedPlayerA.value;
+  newMatch.playerBName = selectedPlayerB.value;
+  newMatch.playerAScore = enteredScoreA.value;
+  newMatch.playerBScore = enteredScoreB.value;
+  stats.push(newMatch);
+  clearMatchInput();
+}
+
+function clearMatchInput() {
+  selectedPlayerA.value = "";
+  selectedPlayerB.value = "";
+  enteredScoreA.value = 0;
+  enteredScoreB.value = 0;
+}
+
+function currentDate() {
+  const date = new Date();
+  let day = String(date.getDate()).padStart(2, "0");
+  let month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  let year = date.getFullYear();
+  let fullDate = day + "." + month + "." + year;
+  return fullDate;
 }
 
 function setNewMatchVisibility() {
@@ -134,6 +207,10 @@ function setNewMatchVisibility() {
 }
 function closeNewMatchVisibility() {
   newMatchVisibility.value = false;
+}
+
+function deleteMatch(matchIndex: number) {
+  stats.splice(matchIndex, 1);
 }
 </script>
 
@@ -156,6 +233,11 @@ function closeNewMatchVisibility() {
   .heading {
     font-weight: bold;
     margin-bottom: 16px;
+  }
+  .col-1 {
+    button {
+      padding: 0 8px 0 8px;
+    }
   }
 }
 </style>
