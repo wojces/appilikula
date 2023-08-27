@@ -109,8 +109,8 @@
         >
           <div class="col-1">{{ index + 1 }}</div>
           <div class="col-2">{{ singleMatch.date }}</div>
-          <div class="col-2">{{ singleMatch.playerAName }}</div>
-          <div class="col-2">{{ singleMatch.playerBName }}</div>
+          <div class="col-2">{{ singleMatch.playerA.userName }}</div>
+          <div class="col-2">{{ singleMatch.playerB.userName }}</div>
           <div class="col-2">{{ singleMatch.playerAScore }}</div>
           <div class="col-2">{{ singleMatch.playerBScore }}</div>
           <div class="col-1">
@@ -232,6 +232,12 @@ async function getMatches() {
       playerBId: doc.data().player_b_uuid,
       playerAScore: doc.data().player_a_score,
       playerBScore: doc.data().player_b_score,
+      playerA: users.value.find(
+        (user: any) => user.userId === doc.data().player_a_uuid
+      ),
+      playerB: users.value.find(
+        (user: any) => user.userId === doc.data().player_b_uuid
+      ),
     };
     matchStats.value.push(match);
   });
@@ -240,10 +246,10 @@ async function getMatches() {
 onMounted(async () => {
   await getUsers();
   await getMatches();
-  console.log("user1: ", users.value[0]);
-  console.log("user2: ", users.value[1]);
-  console.log("match1: ", matchStats.value[0]);
-  console.log("match2: ", matchStats.value[1]);
+  // console.log("user1: ", users.value[0]);
+  // console.log("user2: ", users.value[1]);
+  // console.log("match1: ", matchStats.value[0]);
+  // console.log("match2: ", matchStats.value[1]);
 });
 </script>
 
