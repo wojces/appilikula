@@ -14,12 +14,13 @@
               class="form-select"
               aria-label="Default select example"
               v-model="selectedPlayerA"
+              @change="playerInputValidation"
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
                 v-for="(user, index) in users"
                 :value="user.id"
-                :disabled="user.disable"
+                :disabled="user.disabled"
                 :key="index"
               >
                 {{ index + 1 + ". " + user.name }}
@@ -34,12 +35,13 @@
               class="form-select"
               aria-label="Default select example"
               v-model="selectedPlayerB"
+              @change="playerInputValidation"
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
                 v-for="(user, index) in users"
                 :value="user.id"
-                :disabled="user.disable"
+                :disabled="user.disabled"
                 :key="index"
               >
                 {{ index + 1 + ". " + user.name }}
@@ -174,11 +176,24 @@ async function addMatchToStats() {
   clearMatchInput();
 }
 
+function playerInputValidation(event: any) {
+  const index = event.target.selectedIndex - 1;
+  users.value = users.value.map((user: any, userIndex: any) => {
+    if (userIndex === index) {
+      user.disabled = true;
+    } else {
+      user.disabled = false;
+    }
+    return user;
+  });
+}
+
 function clearMatchInput() {
   selectedPlayerA.value = "";
   selectedPlayerB.value = "";
   enteredScoreA.value = 0;
   enteredScoreB.value = 0;
+  users.value.forEach((user: any) => (user.disabled = false));
 }
 
 function timestampToDate(timestamp: number) {
