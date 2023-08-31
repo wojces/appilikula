@@ -17,12 +17,12 @@
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, i) in users"
+                v-for="(user, index) in users"
                 :value="user.id"
                 :disabled="user.disable"
-                :key="i"
+                :key="index"
               >
-                {{ i + 1 + ". " + user.name }}
+                {{ index + 1 + ". " + user.name }}
               </option>
             </select>
           </div>
@@ -37,12 +37,12 @@
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, i) in users"
+                v-for="(user, index) in users"
                 :value="user.id"
                 :disabled="user.disable"
-                :key="i"
+                :key="index"
               >
-                {{ i + 1 + ". " + user.name }}
+                {{ index + 1 + ". " + user.name }}
               </option>
             </select>
           </div>
@@ -111,12 +111,11 @@
         </div>
         <div class="row heading">
           <div class="col-1">lp</div>
-          <div class="col-2">data meczu</div>
+          <div class="col-3">data meczu</div>
           <div class="col-2">Nazwa gracza A</div>
           <div class="col-2">Nazwa gracza B</div>
           <div class="col-2">Wynik gracza A</div>
           <div class="col-2">Wynik gracza B</div>
-          <div class="col-1"></div>
         </div>
         <div
           class="row"
@@ -124,20 +123,11 @@
           :key="index"
         >
           <div class="col-1">{{ index + 1 }}</div>
-          <div class="col-2">{{ singleMatch.date }}</div>
+          <div class="col-3">{{ singleMatch.date }}</div>
           <div class="col-2">{{ singleMatch.player_a.name }}</div>
           <div class="col-2">{{ singleMatch.player_b.name }}</div>
           <div class="col-2">{{ singleMatch.player_a_score }}</div>
           <div class="col-2">{{ singleMatch.player_b_score }}</div>
-          <div class="col-1">
-            <button
-              type="submit"
-              class="btn btn-secondary mb-1"
-              @click="deleteMatch(index)"
-            >
-              x
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -195,7 +185,7 @@ function timestampToDate(timestamp: number) {
   let unix_timestamp = timestamp;
   const date = new Date(unix_timestamp * 1000);
   let day = String(date.getDate()).padStart(2, "0");
-  let month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  let month = String(date.getMonth() + 1).padStart(2, "0");
   let year = date.getFullYear();
   let fullDate = day + "." + month + "." + year;
 
@@ -208,46 +198,6 @@ function setNewMatchVisibility() {
 function closeNewMatchVisibility() {
   newMatchVisibility.value = false;
 }
-
-function deleteMatch(matchIndex: number) {
-  // stats.value.splice(matchIndex, 1);
-  console.log(matchIndex);
-}
-
-// async function getUsers() {
-//   const queryUserSnapshot = await getDocs(collection(db, "users"));
-//   queryUserSnapshot.forEach((doc) => {
-//     // console.log(doc.id, " => ", doc.data());
-//     const user = {
-//       userId: doc.id,
-//       userName: doc.data().name,
-//       userEmail: doc.data().email,
-//     };
-//     users.value.push(user);
-//   });
-// }
-
-// async function getMatches() {
-//   const queryUserSnapshot = await getDocs(collection(db, "matches"));
-//   queryUserSnapshot.forEach((doc) => {
-//     // console.log(doc.id, " => ", doc.data());
-//     const match = {
-//       matchId: doc.id,
-//       date: timestampToDate(doc.data().date.seconds),
-//       playerAId: doc.data().player_a_uuid,
-//       playerBId: doc.data().player_b_uuid,
-//       playerAScore: doc.data().player_a_score,
-//       playerBScore: doc.data().player_b_score,
-//       playerA: users.value.find(
-//         (user: any) => user.userId === doc.data().player_a_uuid
-//       ),
-//       playerB: users.value.find(
-//         (user: any) => user.userId === doc.data().player_b_uuid
-//       ),
-//     };
-//     matchStats.value.push(match);
-//   });
-// }
 
 function getUsers() {
   onSnapshot(usersCollectionRef, (querySnapshot) => {
