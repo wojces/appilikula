@@ -16,8 +16,14 @@
               v-model="selectedPlayerA"
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
-              <option value="Wojtek">Wojtek</option>
-              <option value="Dawid">Dawid</option>
+              <option
+                v-for="(user, index) in users"
+                :value="user.id"
+                :disabled="user.disable"
+                :key="index"
+              >
+                {{ index + 1 + ". " + user.name }}
+              </option>
             </select>
           </div>
           <div class="col">
@@ -30,8 +36,14 @@
               v-model="selectedPlayerB"
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
-              <option value="Wojtek">Wojtek</option>
-              <option value="Dawid">Dawid</option>
+              <option
+                v-for="(user, index) in users"
+                :value="user.id"
+                :disabled="user.disable"
+                :key="index"
+              >
+                {{ index + 1 + ". " + user.name }}
+              </option>
             </select>
           </div>
         </div>
@@ -42,6 +54,8 @@
             >
             <input
               type="number"
+              min="0"
+              max="99"
               class="form-control"
               id="exampleFormControlInput1"
               placeholder="podaj wynik..."
@@ -54,6 +68,8 @@
             >
             <input
               type="number"
+              min="0"
+              max="99"
               class="form-control"
               id="exampleFormControlInput1"
               placeholder="podaj wynik..."
@@ -64,7 +80,7 @@
         <button
           type="submit"
           class="btn btn-secondary mb-2"
-          @click="addMatchScore()"
+          @click="addMatchToStats()"
         >
           Dodaj mecz
         </button>
@@ -95,12 +111,11 @@
         </div>
         <div class="row heading">
           <div class="col-1">lp</div>
-          <div class="col-2">data meczu</div>
+          <div class="col-3">data meczu</div>
           <div class="col-2">Nazwa gracza A</div>
           <div class="col-2">Nazwa gracza B</div>
           <div class="col-2">Wynik gracza A</div>
           <div class="col-2">Wynik gracza B</div>
-          <div class="col-1"></div>
         </div>
         <div
           class="row"
@@ -108,20 +123,11 @@
           :key="index"
         >
           <div class="col-1">{{ index + 1 }}</div>
-          <div class="col-2">{{ singleMatch.date }}</div>
-          <div class="col-2">{{ singleMatch.playerA.userName }}</div>
-          <div class="col-2">{{ singleMatch.playerB.userName }}</div>
-          <div class="col-2">{{ singleMatch.playerAScore }}</div>
-          <div class="col-2">{{ singleMatch.playerBScore }}</div>
-          <div class="col-1">
-            <button
-              type="submit"
-              class="btn btn-secondary mb-1"
-              @click="deleteMatch(index)"
-            >
-              x
-            </button>
-          </div>
+          <div class="col-3">{{ singleMatch.date }}</div>
+          <div class="col-2">{{ singleMatch.player_a.name }}</div>
+          <div class="col-2">{{ singleMatch.player_b.name }}</div>
+          <div class="col-2">{{ singleMatch.player_a_score }}</div>
+          <div class="col-2">{{ singleMatch.player_b_score }}</div>
         </div>
       </div>
     </div>
@@ -129,9 +135,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import db from "../firebase/firebaseInit";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import "firebase/compat/firestore";
+import firebase from "firebase/compat/app";
+
+const matchesCollectionRef = collection(db, "matches");
+const usersCollectionRef = collection(db, "users");
+const matchesCollectionQuerry = query(
+  matchesCollectionRef,
+  orderBy("date", "asc")
+);
 
 let newMatchVisibility = ref(true);
 const selectedPlayerA = ref("");
@@ -140,33 +161,16 @@ let enteredScoreA = ref(0);
 let enteredScoreB = ref(0);
 let users: any = ref([]);
 let matchStats: any = ref([]);
-let stats: any = ref([
-  {
-    matchId: "1",
-    date: "15.08.2023",
-    playerAName: "Wojtek",
-    playerBName: "Dawid",
-    playerAScore: 2,
-    playerBScore: 6,
-  },
-]);
-let newMatch = reactive({
-  matchId: 0,
-  date: "",
-  playerAName: "",
-  playerBName: "",
-  playerAScore: 0,
-  playerBScore: 0,
-});
 
-function addMatchScore() {
-  newMatch.matchId = stats.value.length + 1;
-  newMatch.date = currentDate();
-  newMatch.playerAName = selectedPlayerA.value;
-  newMatch.playerBName = selectedPlayerB.value;
-  newMatch.playerAScore = enteredScoreA.value;
-  newMatch.playerBScore = enteredScoreB.value;
-  stats.value.push(newMatch);
+async function addMatchToStats() {
+  const docRef = await addDoc(matchesCollectionRef, {
+    date: firebase.firestore.FieldValue.serverTimestamp(),
+    player_a_uuid: selectedPlayerA.value,
+    player_b_uuid: selectedPlayerB.value,
+    player_a_score: enteredScoreA.value,
+    player_b_score: enteredScoreB.value,
+  });
+  console.log("Document written with ID: ", docRef.id);
   clearMatchInput();
 }
 
@@ -177,20 +181,11 @@ function clearMatchInput() {
   enteredScoreB.value = 0;
 }
 
-function currentDate() {
-  const date = new Date();
-  let day = String(date.getDate()).padStart(2, "0");
-  let month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
-  let year = date.getFullYear();
-  let fullDate = day + "." + month + "." + year;
-  return fullDate;
-}
-
 function timestampToDate(timestamp: number) {
   let unix_timestamp = timestamp;
   const date = new Date(unix_timestamp * 1000);
   let day = String(date.getDate()).padStart(2, "0");
-  let month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  let month = String(date.getMonth() + 1).padStart(2, "0");
   let year = date.getFullYear();
   let fullDate = day + "." + month + "." + year;
 
@@ -204,52 +199,47 @@ function closeNewMatchVisibility() {
   newMatchVisibility.value = false;
 }
 
-function deleteMatch(matchIndex: number) {
-  stats.value.splice(matchIndex, 1);
-}
-
-async function getUsers() {
-  const queryUserSnapshot = await getDocs(collection(db, "users"));
-  queryUserSnapshot.forEach((doc) => {
-    // console.log(doc.id, " => ", doc.data());
-    const user = {
-      userId: doc.id,
-      userName: doc.data().name,
-      userEmail: doc.data().email,
-    };
-    users.value.push(user);
+function getUsers() {
+  onSnapshot(usersCollectionRef, (querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const user = {
+        id: doc.id,
+        name: doc.data().name,
+        email: doc.data().email,
+        disabled: false,
+      };
+      users.value.push(user);
+    });
   });
 }
 
-async function getMatches() {
-  const queryUserSnapshot = await getDocs(collection(db, "matches"));
-  queryUserSnapshot.forEach((doc) => {
-    // console.log(doc.id, " => ", doc.data());
-    const match = {
-      matchId: doc.id,
-      date: timestampToDate(doc.data().date.seconds),
-      playerAId: doc.data().player_a_uuid,
-      playerBId: doc.data().player_b_uuid,
-      playerAScore: doc.data().player_a_score,
-      playerBScore: doc.data().player_b_score,
-      playerA: users.value.find(
-        (user: any) => user.userId === doc.data().player_a_uuid
-      ),
-      playerB: users.value.find(
-        (user: any) => user.userId === doc.data().player_b_uuid
-      ),
-    };
-    matchStats.value.push(match);
+function getMatches() {
+  onSnapshot(matchesCollectionQuerry, (querySnapshot) => {
+    const matches: any = [];
+    querySnapshot.forEach((doc) => {
+      const match = {
+        match_id: doc.id,
+        date: timestampToDate(doc.data().date?.seconds),
+        player_a_uuid: doc.data().player_a_uuid,
+        player_b_uuid: doc.data().player_b_uuid,
+        player_a_score: doc.data().player_a_score,
+        player_b_score: doc.data().player_b_score,
+        player_a: users.value.find(
+          (user: any) => user.id === doc.data().player_a_uuid
+        ),
+        player_b: users.value.find(
+          (user: any) => user.id === doc.data().player_b_uuid
+        ),
+      };
+      matches.push(match);
+    });
+    matchStats.value = matches;
   });
 }
 
 onMounted(async () => {
-  await getUsers();
-  await getMatches();
-  // console.log("user1: ", users.value[0]);
-  // console.log("user2: ", users.value[1]);
-  // console.log("match1: ", matchStats.value[0]);
-  // console.log("match2: ", matchStats.value[1]);
+  getUsers();
+  getMatches();
 });
 </script>
 
