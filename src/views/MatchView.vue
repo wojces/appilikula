@@ -14,11 +14,10 @@
               class="form-select"
               aria-label="Default select example"
               v-model="selectedPlayerA"
-              @change="playerInputValidation"
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, index) in users"
+                v-for="(user, index) in selectUser"
                 :value="user.id"
                 :disabled="user.disabled"
                 :key="index"
@@ -35,11 +34,10 @@
               class="form-select"
               aria-label="Default select example"
               v-model="selectedPlayerB"
-              @change="playerInputValidation"
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, index) in users"
+                v-for="(user, index) in selectUser"
                 :value="user.id"
                 :disabled="user.disabled"
                 :key="index"
@@ -137,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import db from "../firebase/firebaseInit";
 import {
   collection,
@@ -163,6 +161,7 @@ let enteredScoreA = ref(0);
 let enteredScoreB = ref(0);
 let users: any = ref([]);
 let matchStats: any = ref([]);
+let selectUser = users;
 
 async function addMatchToStats() {
   const docRef = await addDoc(matchesCollectionRef, {
@@ -176,15 +175,19 @@ async function addMatchToStats() {
   clearMatchInput();
 }
 
-function playerInputValidation(event: any) {
-  const index = event.target.selectedIndex - 1;
-  users.value = users.value.map((user: any, userIndex: any) => {
-    if (userIndex === index) {
-      user.disabled = true;
-    } else {
-      user.disabled = false;
-    }
-    return user;
+watch(selectedPlayerA, (playerAId) => {
+  playerInputValidation(playerAId);
+});
+watch(selectedPlayerB, (playerBId) => {
+  playerInputValidation(playerBId);
+});
+
+function playerInputValidation(playerId: any) {
+  selectUser.value = selectUser.value.map((user: any) => {
+    return {
+      ...user,
+      disabled: user.id === playerId,
+    };
   });
 }
 
@@ -193,7 +196,6 @@ function clearMatchInput() {
   selectedPlayerB.value = "";
   enteredScoreA.value = 0;
   enteredScoreB.value = 0;
-  users.value.forEach((user: any) => (user.disabled = false));
 }
 
 function timestampToDate(timestamp: number) {
@@ -221,7 +223,6 @@ function getUsers() {
         id: doc.id,
         name: doc.data().name,
         email: doc.data().email,
-        disabled: false,
       };
       users.value.push(user);
     });
