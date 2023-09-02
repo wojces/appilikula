@@ -17,9 +17,9 @@
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, index) in users"
+                v-for="(user, index) in selectableUsers"
                 :value="user.id"
-                :disabled="user.disable"
+                :disabled="user.disabled"
                 :key="index"
               >
                 {{ index + 1 + ". " + user.name }}
@@ -37,9 +37,9 @@
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, index) in users"
+                v-for="(user, index) in selectableUsers"
                 :value="user.id"
-                :disabled="user.disable"
+                :disabled="user.disabled"
                 :key="index"
               >
                 {{ index + 1 + ". " + user.name }}
@@ -135,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import db from "../firebase/firebaseInit";
 import {
   collection,
@@ -161,6 +161,7 @@ let enteredScoreA = ref(0);
 let enteredScoreB = ref(0);
 let users: any = ref([]);
 let matchStats: any = ref([]);
+let selectableUsers = users;
 
 async function addMatchToStats() {
   const docRef = await addDoc(matchesCollectionRef, {
@@ -172,6 +173,22 @@ async function addMatchToStats() {
   });
   console.log("Document written with ID: ", docRef.id);
   clearMatchInput();
+}
+
+watch(selectedPlayerA, (playerAId) => {
+  playerInputValidation(playerAId);
+});
+watch(selectedPlayerB, (playerBId) => {
+  playerInputValidation(playerBId);
+});
+
+function playerInputValidation(playerId: any) {
+  selectableUsers.value = selectableUsers.value.map((user: any) => {
+    return {
+      ...user,
+      disabled: user.id === playerId,
+    };
+  });
 }
 
 function clearMatchInput() {
@@ -206,7 +223,6 @@ function getUsers() {
         id: doc.id,
         name: doc.data().name,
         email: doc.data().email,
-        disabled: false,
       };
       users.value.push(user);
     });
