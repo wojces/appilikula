@@ -227,7 +227,7 @@ function getUsers(): void {
         name: doc.data().name,
         email: doc.data().email,
       };
-      users.value.push(user);
+      users.value.push(user as User);
     });
   });
 }
