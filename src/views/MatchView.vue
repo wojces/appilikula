@@ -124,8 +124,8 @@
         >
           <div class="col-1">{{ index + 1 }}</div>
           <div class="col-3">{{ singleMatch.date }}</div>
-          <div class="col-2">{{ singleMatch.player_a.name }}</div>
-          <div class="col-2">{{ singleMatch.player_b.name }}</div>
+          <div class="col-2">{{ singleMatch.playerA?.name }}</div>
+          <div class="col-2">{{ singleMatch.playerB?.name }}</div>
           <div class="col-2">{{ singleMatch.player_a_score }}</div>
           <div class="col-2">{{ singleMatch.player_b_score }}</div>
         </div>
@@ -135,8 +135,11 @@
 </template>
 
 <script setup lang="ts">
+import Match from "@/types/Match";
+import User from "@/types/User";
+import type { Ref } from "vue";
 import { ref, onMounted, watch } from "vue";
-import db from "../firebase/firebaseInit";
+import db from "@/firebase/firebaseInit";
 import {
   collection,
   onSnapshot,
@@ -159,11 +162,11 @@ const selectedPlayerA = ref("");
 const selectedPlayerB = ref("");
 let enteredScoreA = ref(0);
 let enteredScoreB = ref(0);
-let users: any = ref([]);
-let matchStats: any = ref([]);
+let users: Ref<User[]> = ref([]);
+let matchStats: Ref<Match[]> = ref([]);
 let selectableUsers = users;
 
-async function addMatchToStats() {
+async function addMatchToStats(): Promise<void> {
   const docRef = await addDoc(matchesCollectionRef, {
     date: firebase.firestore.FieldValue.serverTimestamp(),
     player_a_uuid: selectedPlayerA.value,
@@ -175,15 +178,15 @@ async function addMatchToStats() {
   clearMatchInput();
 }
 
-watch(selectedPlayerA, (playerAId) => {
+watch(selectedPlayerA, (playerAId): void => {
   playerInputValidation(playerAId);
 });
-watch(selectedPlayerB, (playerBId) => {
+watch(selectedPlayerB, (playerBId): void => {
   playerInputValidation(playerBId);
 });
 
-function playerInputValidation(playerId: any) {
-  selectableUsers.value = selectableUsers.value.map((user: any) => {
+function playerInputValidation(playerId: string): void {
+  selectableUsers.value = selectableUsers.value.map((user: User) => {
     return {
       ...user,
       disabled: user.id === playerId,
@@ -191,14 +194,14 @@ function playerInputValidation(playerId: any) {
   });
 }
 
-function clearMatchInput() {
+function clearMatchInput(): void {
   selectedPlayerA.value = "";
   selectedPlayerB.value = "";
   enteredScoreA.value = 0;
   enteredScoreB.value = 0;
 }
 
-function timestampToDate(timestamp: number) {
+function timestampToDate(timestamp: number): string {
   let unix_timestamp = timestamp;
   const date = new Date(unix_timestamp * 1000);
   let day = String(date.getDate()).padStart(2, "0");
@@ -209,14 +212,14 @@ function timestampToDate(timestamp: number) {
   return fullDate;
 }
 
-function setNewMatchVisibility() {
+function setNewMatchVisibility(): void {
   newMatchVisibility.value = true;
 }
-function closeNewMatchVisibility() {
+function closeNewMatchVisibility(): void {
   newMatchVisibility.value = false;
 }
 
-function getUsers() {
+function getUsers(): void {
   onSnapshot(usersCollectionRef, (querySnapshot) => {
     querySnapshot.forEach((doc) => {
       const user = {
@@ -229,9 +232,9 @@ function getUsers() {
   });
 }
 
-function getMatches() {
+function getMatches(): void {
   onSnapshot(matchesCollectionQuerry, (querySnapshot) => {
-    const matches: any = [];
+    const matches: Match[] = [];
     querySnapshot.forEach((doc) => {
       const match = {
         match_id: doc.id,
@@ -240,11 +243,11 @@ function getMatches() {
         player_b_uuid: doc.data().player_b_uuid,
         player_a_score: doc.data().player_a_score,
         player_b_score: doc.data().player_b_score,
-        player_a: users.value.find(
-          (user: any) => user.id === doc.data().player_a_uuid
+        playerA: users.value.find(
+          (user: User) => user.id === doc.data().player_a_uuid
         ),
-        player_b: users.value.find(
-          (user: any) => user.id === doc.data().player_b_uuid
+        playerB: users.value.find(
+          (user: User) => user.id === doc.data().player_b_uuid
         ),
       };
       matches.push(match);
