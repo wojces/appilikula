@@ -17,7 +17,7 @@
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, index) in selectUser"
+                v-for="(user, index) in selectableUsers"
                 :value="user.id"
                 :disabled="user.disabled"
                 :key="index"
@@ -37,7 +37,7 @@
             >
               <option disabled value="">Naciśnij aby wybrać gracza</option>
               <option
-                v-for="(user, index) in selectUser"
+                v-for="(user, index) in selectableUsers"
                 :value="user.id"
                 :disabled="user.disabled"
                 :key="index"
@@ -161,7 +161,7 @@ let enteredScoreA = ref(0);
 let enteredScoreB = ref(0);
 let users: any = ref([]);
 let matchStats: any = ref([]);
-let selectUser = users;
+let selectableUsers = users;
 
 async function addMatchToStats() {
   const docRef = await addDoc(matchesCollectionRef, {
@@ -183,7 +183,7 @@ watch(selectedPlayerB, (playerBId) => {
 });
 
 function playerInputValidation(playerId: any) {
-  selectUser.value = selectUser.value.map((user: any) => {
+  selectableUsers.value = selectableUsers.value.map((user: any) => {
     return {
       ...user,
       disabled: user.id === playerId,
