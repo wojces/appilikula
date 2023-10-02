@@ -1,6 +1,6 @@
 <template>
   <div class="match">
-    <div class="container text-center">
+    <div class="container text-center py-5">
       <div class="newMatchInput border" v-if="newMatchVisibility">
         <div class="row">
           <div class="col"><h3>Dodaj wynik meczu</h3></div>
