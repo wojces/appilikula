@@ -101,32 +101,30 @@ function removePlayerInput(index: number): void {
 }
 
 function addMatches(): void {
-  let matchesNumber: number = players.value.length;
   let matchesArray: SingleMatch[] = [];
   let secondMatchesArray: SingleMatch[] = [];
-  for (let i = 0; i < matchesNumber; i++) {
+
+  players.value.forEach((player: string, index: number) => {
     let match: SingleMatch = {
-      player_a: players.value[i],
-      player_b: players.value[i + 1 === players.value.length ? 0 : i + 1],
+      player_a: player,
+      player_b: players.value[index < players.value.length - 1 ? index + 1 : 0],
       player_a_score: "",
       player_b_score: "",
     };
     matchesArray.push(match);
-  }
-  for (let i = 0; i < matchesNumber; i++) {
-    let match: SingleMatch = {
-      player_a: players.value[i + 1 === players.value.length ? 0 : i + 1],
-      player_b: players.value[i],
-      player_a_score: "",
-      player_b_score: "",
-    };
-    secondMatchesArray.push(match);
-  }
-  if (secondMatch.value === false) {
-    matches.value = matchesArray;
-  } else {
-    matches.value = matchesArray.concat(secondMatchesArray);
-  }
+
+    if (secondMatch.value === true) {
+      let secondMatch: SingleMatch = {
+        player_a:
+          players.value[index < players.value.length - 1 ? index + 1 : 0],
+        player_b: player,
+        player_a_score: "",
+        player_b_score: "",
+      };
+      secondMatchesArray.push(secondMatch);
+    }
+  });
+  matches.value = matchesArray.concat(secondMatchesArray);
 }
 
 async function addLeague(): Promise<void> {

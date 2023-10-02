@@ -37,15 +37,16 @@
               ><router-link
                 class="link-dark link-opacity-25-hover"
                 to="/group-playoff"
-                >Grupa+Play-Off</router-link
-              ></a
+              >
+                Grupa Play-Off
+              </router-link></a
             >
           </li>
           <li class="nav-item">
             <a class="nav-link"
-              ><router-link class="link-dark link-opacity-25-hover" to="/match"
-                >Mecz</router-link
-              ></a
+              ><router-link class="link-dark link-opacity-25-hover" to="/match">
+                Mecz
+              </router-link></a
             >
           </li>
         </ul>

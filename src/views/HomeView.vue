@@ -13,11 +13,9 @@
                 Minimum 3 zespoły. Mecze rozgrywane każdy z każdym. Dwumecz jako
                 opcja.
               </p>
-              <a href="#" class="btn btn-primary">
-                <router-link class="link-light" to="/league"
-                  >Zagraj</router-link
-                >
-              </a>
+              <router-link class="link-light btn btn-primary" to="/league">
+                Zagraj
+              </router-link>
             </div>
           </div>
         </div>
@@ -32,11 +30,9 @@
                 Minimum 4 zespoły. Mecze rozgrywane w formie drabinki. Dwumecz i
                 mecz o trzecie miejsce jako opcje.
               </p>
-              <a href="#" class="btn btn-dark"
-                ><router-link class="link-light" to="/cup"
-                  >Zagraj</router-link
-                ></a
-              >
+              <router-link class="link-light btn btn-dark" to="/cup">
+                Zagraj
+              </router-link>
             </div>
           </div>
         </div>
@@ -51,11 +47,12 @@
                 Minimum 6 zespołów. Mecze rozgrywane w dwóch grupach następnie
                 faza pucharowa. Dwumecz i mecz o trzecie miejsce jako opcja.
               </p>
-              <a href="#" class="btn btn-primary"
-                ><router-link class="link-light" to="/group-playoff"
-                  >Zagraj</router-link
-                >
-              </a>
+              <router-link
+                class="link-light btn btn-primary"
+                to="/group-playoff"
+              >
+                Zagraj
+              </router-link>
             </div>
           </div>
         </div>

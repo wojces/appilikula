@@ -9,7 +9,6 @@
         class="form-control my-3 mx-4"
         type="text"
         placeholder="Podaj nazwę turnieju"
-        aria-label="default input example"
       />
     </div>
     <div class="number-of-players row my-5">
@@ -30,24 +29,9 @@
     </div>
     <div class="players mx-4 text-start">
       <p class="fw-bold my-3">Podaj nazwy graczy</p>
-      <input
-        class="form-control my-3"
-        type="text"
-        placeholder="Gracz 1"
-        aria-label="default input example"
-      />
-      <input
-        class="form-control my-3"
-        type="text"
-        placeholder="Gracz 2"
-        aria-label="default input example"
-      />
-      <input
-        class="form-control my-3"
-        type="text"
-        placeholder="Gracz 3"
-        aria-label="default input example"
-      />
+      <input class="form-control my-3" type="text" placeholder="Gracz 1" />
+      <input class="form-control my-3" type="text" placeholder="Gracz 2" />
+      <input class="form-control my-3" type="text" placeholder="Gracz 3" />
     </div>
     <div class="second-match form-check d-flex">
       <input
