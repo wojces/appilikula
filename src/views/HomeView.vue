@@ -1,121 +1,70 @@
 <template>
-  <div class="match">
-    <!--
-    2 inputy:
-      - Gracz A
-      - Wynik gracza A
-      - Gracz B
-      - Wynik bracza B
-      ZAPISZ  -->
-    <div class="container text-center">
-      <div class="playerInput border">
-        <div class="row">
-          <div class="col"><h3>Dodaj wynik</h3></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="selectedPlayer"
-            >
-              <option disabled value="">Naciśnij aby wybrać gracza</option>
-              <option value="playerA">Gracz A</option>
-              <option value="playerB">Gracz B</option>
-            </select>
-          </div>
-          <div class="col">
-            <input
-              type="number"
-              class="form-control"
-              id="exampleFormControlInput1"
-              placeholder="podaj wynik..."
-              v-model="enteredScoreValue"
-            />
+  <section class="p-5">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md">
+          <div class="card bg-dark text-light">
+            <div class="card-body text-center">
+              <div class="h1 mb-3">
+                <i>x</i>
+              </div>
+              <h3 class="card-title mb-3">Liga</h3>
+              <p class="card-text">
+                Minimum 3 zespoły. Mecze rozgrywane każdy z każdym. Dwumecz jako
+                opcja.
+              </p>
+              <router-link class="link-light btn btn-primary" to="/league">
+                Zagraj
+              </router-link>
+            </div>
           </div>
         </div>
-        <button
-          type="submit"
-          class="btn btn-secondary mb-2"
-          @click="setPlayerScore()"
-        >
-          Zatwierdź
-        </button>
-      </div>
-      <div class="playerScore border mt-4">
-        <div class="row">
-          <div class="col"><h3>Wyniki</h3></div>
+        <div class="col-md">
+          <div class="card bg-secondary text-light">
+            <div class="card-body text-center">
+              <div class="h1 mb-3">
+                <i>x</i>
+              </div>
+              <h3 class="card-title mb-3">Puchar</h3>
+              <p class="card-text">
+                Minimum 4 zespoły. Mecze rozgrywane w formie drabinki. Dwumecz i
+                mecz o trzecie miejsce jako opcje.
+              </p>
+              <router-link class="link-light btn btn-dark" to="/cup">
+                Zagraj
+              </router-link>
+            </div>
+          </div>
         </div>
-        <div class="row names">
-          <div class="col">Gracz A</div>
-          <div class="col">Gracz B</div>
+        <div class="col-md">
+          <div class="card bg-dark text-light">
+            <div class="card-body text-center">
+              <div class="h1 mb-3">
+                <i>x</i>
+              </div>
+              <h3 class="card-title mb-3">Grupa + Play-Off</h3>
+              <p class="card-text">
+                Minimum 6 zespołów. Mecze rozgrywane w dwóch grupach następnie
+                faza pucharowa. Dwumecz i mecz o trzecie miejsce jako opcja.
+              </p>
+              <router-link
+                class="link-light btn btn-primary"
+                to="/group-playoff"
+              >
+                Zagraj
+              </router-link>
+            </div>
+          </div>
         </div>
-        <div class="row scores">
-          <div class="col">{{ scoreA }}</div>
-          <div class="col">{{ scoreB }}</div>
-        </div>
-        <button
-          type="submit"
-          class="btn btn-secondary mb-2"
-          @click="clearScore"
-        >
-          Zeruj
-        </button>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
-<script setup lang="ts">
-// import { Vue } from "vue-class-component";
-import { ref } from "vue";
+<script setup lang="ts"></script>
 
-const selectedPlayer = ref("");
-let enteredScoreValue = ref(0);
-let scoreA = ref(0);
-let scoreB = ref(0);
-
-function setPlayerScore() {
-  if (selectedPlayer.value === "playerA") {
-    scoreA.value = scoreA.value + enteredScoreValue.value;
-  } else if (selectedPlayer.value === "playerB") {
-    scoreB.value = scoreB.value + enteredScoreValue.value;
-  }
-
-  // console.log("Wybrany gracz to: ", selectedPlayer.value);
-  // console.log("Wprowadzony wynik gracza: ", enteredScoreValue.value);
-  // console.log("Wynik gracza A: ", scoreA.value);
-  // console.log("Wynik gracza B: ", scoreB.value);
-}
-
-function clearScore() {
-  scoreA.value = 0;
-  scoreB.value = 0;
-  // console.log("Wynik A: " + scoreA.value);
-  // console.log("Wynik B: " + scoreB.value);
-}
-
-// export default class HomeView extends Vue {}
-</script>
-
-<style lang="scss">
-.playerInput {
-  padding: 0 16px 0 16px;
-
-  .col {
-    padding: 16px;
-  }
-}
-.playerScore {
-  .col {
-    padding: 16px;
-  }
-  .names {
-    font-size: 20px;
-  }
-  .scores {
-    font-size: 24px;
-    font-weight: bold;
-  }
+<style scoped lang="scss">
+.container a {
+  text-decoration: none;
 }
 </style>
