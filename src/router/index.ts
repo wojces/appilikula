@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import MatchView from "../views/MatchView.vue";
 import LeagueForm from "@/views/league/LeagueForm.vue";
+import LeagueList from "@/views/league/LeagueList.vue";
 import LeagueTournament from "@/views/league/LeagueTournament.vue";
 import CupView from "@/views/cup/CupView.vue";
 import GroupPlayOffView from "@/views/groupPlayOff/GroupPlayOffView.vue";
@@ -16,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/league",
     name: "league",
     component: LeagueForm,
+  },
+  {
+    path: "/league/list",
+    name: "leagueList",
+    component: LeagueList,
   },
   {
     path: "/league/:id",

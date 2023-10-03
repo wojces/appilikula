@@ -262,7 +262,7 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .newMatchInput {
   padding: 0 16px 0 16px;
 
