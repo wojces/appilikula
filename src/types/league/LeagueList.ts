@@ -6,6 +6,7 @@ type LeagueList = {
   id: string;
   user: User | undefined;
   playersNumber: number;
+  completed: boolean;
 };
 
 export default LeagueList;

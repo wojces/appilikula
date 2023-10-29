@@ -6,26 +6,30 @@
     <div class="list my-5">
       <div class="row fw-bold my-3">
         <div class="col-2">nazwa</div>
-        <div class="col-3">data utworzenia</div>
+        <div class="col-2">data utworzenia</div>
         <div class="col-3">id turnieju</div>
         <div class="col-2">utworzył</div>
-        <div class="col-2">liczba graczy</div>
+        <div class="col-1">liczba graczy</div>
+        <div class="col-2">status</div>
       </div>
       <div class="row my-1" v-for="(league, index) in leagues" :key="index">
         <div class="col-2">{{ league.name }}</div>
-        <div class="col-3">{{ league.date }}</div>
+        <div class="col-2">{{ league.date }}</div>
         <div class="col-3">
           <router-link :to="league.id">{{ league.id }}</router-link>
         </div>
         <div class="col-2">{{ league.user?.name }}</div>
-        <div class="col-2">{{ league.playersNumber }}</div>
+        <div class="col-1">{{ league.playersNumber }}</div>
+        <div class="col-2">
+          {{ league.completed ? "zakończony" : "aktywny" }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import LeagueList from "@/types/LeagueList";
+import LeagueList from "@/types/league/LeagueList";
 import User from "@/types/User";
 import type { Ref } from "vue";
 import { ref, onMounted } from "vue";
@@ -79,6 +83,7 @@ function getLeagues(): void {
           (user: User) => user.id === doc.data().user_uuid
         ),
         playersNumber: doc.data().players.length,
+        completed: doc.data().completed,
       };
       leagueStats.push(league);
     });
