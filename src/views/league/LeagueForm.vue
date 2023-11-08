@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-5 p-5 border">
+  <form ref="form" class="container my-5 p-5 border">
     <div class="title">
       <h1>Liga</h1>
     </div>
@@ -13,6 +13,7 @@
         id="tournamentName"
         placeholder="Podaj nazwę turnieju..."
         v-model="name"
+        required
       />
     </div>
     <div class="players text-start">
@@ -26,6 +27,7 @@
               id="players"
               placeholder="Podaj imię gracza..."
               v-model="players[index]"
+              required
             />
           </div>
           <div v-if="index <= 2" class="col-1"></div>
@@ -63,11 +65,15 @@
       />
     </div>
     <div class="create-tournament">
-      <button type="submit" class="btn btn-secondary" @click="addLeague">
+      <button
+        @click.prevent="addLeague"
+        type="submit"
+        class="btn btn-secondary"
+      >
         Utwórz turniej
       </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -81,6 +87,7 @@ import router from "@/router";
 
 const leagueCollectionRef = collection(db, "league");
 
+const form = ref(null);
 let name = ref("");
 let secondMatch = ref(false);
 let players: Ref<string[]> = ref(["", "", ""]);
@@ -100,34 +107,49 @@ function removePlayerInput(index: number): void {
   players.value.splice(index, 1);
 }
 
+function shuffle(array: SingleMatch[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 function addMatches(): void {
   let matchesArray: SingleMatch[] = [];
   let secondMatchesArray: SingleMatch[] = [];
 
   players.value.forEach((player: string, index: number) => {
-    let match: SingleMatch = {
-      player_a: player,
-      player_b: players.value[index < players.value.length - 1 ? index + 1 : 0],
-      player_a_score: "",
-      player_b_score: "",
-    };
-    matchesArray.push(match);
-
-    if (secondMatch.value === true) {
-      let secondMatch: SingleMatch = {
-        player_a:
-          players.value[index < players.value.length - 1 ? index + 1 : 0],
-        player_b: player,
-        player_a_score: "",
-        player_b_score: "",
+    for (let j = index + 1; j < players.value.length; j++) {
+      let match: SingleMatch = {
+        player_a: player,
+        player_b: players.value[j],
+        player_a_score: NaN,
+        player_b_score: NaN,
+        played: false,
       };
-      secondMatchesArray.push(secondMatch);
+      matchesArray.push(match);
     }
   });
+  shuffle(matchesArray);
+  if (secondMatch.value === true) {
+    for (let i = 0; i < matchesArray.length; i++) {
+      const currentMatch = matchesArray[i];
+      secondMatchesArray.push({
+        ...currentMatch,
+        player_a: currentMatch.player_b,
+        player_b: currentMatch.player_a,
+      });
+    }
+  }
   matches.value = matchesArray.concat(secondMatchesArray);
 }
 
 async function addLeague(): Promise<void> {
+  if (form.value && !(form.value as HTMLFormElement).checkValidity()) {
+    (form.value as HTMLFormElement).reportValidity();
+    return;
+  }
+
   addMatches();
   const docRef = await addDoc(leagueCollectionRef, {
     date: firebase.firestore.FieldValue.serverTimestamp(),
@@ -136,6 +158,7 @@ async function addLeague(): Promise<void> {
     matches: matches.value,
     players: players.value,
     user_uuid: userId,
+    completed: false,
   });
   console.log("Document written with ID: ", docRef.id);
 
