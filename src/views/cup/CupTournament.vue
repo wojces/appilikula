@@ -8,7 +8,7 @@
         <p>Data utworzenia: {{ leagueTournament.date }}</p>
         <p>Utworzył: {{ leagueTournament.user?.name }}</p>
         <p>
-          Status: {{ leagueTournament.is_completed ? "Zakończony" : "Aktywny" }}
+          Status: {{ leagueTournament.completed ? "Zakończony" : "Aktywny" }}
         </p>
       </div>
       <h1>Turniej: {{ leagueTournament.name }}</h1>
@@ -46,7 +46,7 @@
             <td>{{ player.draws }}</td>
             <td>{{ player.lost }}</td>
             <td>{{ player.scoredGoals }}:{{ player.lostGoals }}</td>
-            <td>{{ player.aggregateScoreline }}</td>
+            <td>{{ player.goalBilans }}</td>
             <td class="fw-bold">{{ player.points }}</td>
           </tr>
         </tbody>
@@ -77,7 +77,7 @@
             max="99"
             class="form-control"
             v-model="leagueTournament.matches[index].player_a_score"
-            :disabled="leagueTournament.matches[index].is_played"
+            :disabled="leagueTournament.matches[index].played"
             required
           />
         </div>
@@ -89,14 +89,14 @@
             max="99"
             class="form-control"
             v-model="leagueTournament.matches[index].player_b_score"
-            :disabled="leagueTournament.matches[index].is_played"
+            :disabled="leagueTournament.matches[index].played"
             required
           />
         </div>
         <div class="col-1">
-          <div v-if="leagueTournament.is_completed"></div>
+          <div v-if="leagueTournament.completed"></div>
           <button
-            v-else-if="leagueTournament.matches[index].is_played"
+            v-else-if="leagueTournament.matches[index].played"
             class="btn btn-outline-secondary btn-sm"
             @click="restoreMatch(index)"
           >
@@ -129,7 +129,7 @@
 import LeagueScore from "@/types/league/LeagueScore";
 import LeagueTournament from "@/types/league/LeagueTournament";
 import User from "@/types/User";
-import Match from "@/types/Match";
+import SingleMatch from "@/types/SingleMatch";
 
 import { useRoute } from "vue-router";
 import { doc, onSnapshot, collection, updateDoc } from "firebase/firestore";
@@ -159,7 +159,7 @@ function createTable(): void {
       lost: 0,
       scoredGoals: 0,
       lostGoals: 0,
-      get aggregateScoreline() {
+      get goalBilans() {
         return this.scoredGoals - this.lostGoals;
       },
       get points() {
@@ -172,7 +172,7 @@ function createTable(): void {
 }
 
 function updateTable(): void {
-  leagueTournament.value.matches.forEach((match: Match) => {
+  leagueTournament.value.matches.forEach((match: SingleMatch) => {
     let playerAIndex = leaguePlayersScore.value.findIndex(
       (player: LeagueScore) => player.name === match.player_a
     );
@@ -233,13 +233,10 @@ function updateTable(): void {
   leaguePlayersScore.value.sort((a: LeagueScore, b: LeagueScore) => {
     if (a.points !== b.points) {
       return b.points - a.points;
-    } else if (
-      a.points === b.points &&
-      a.aggregateScoreline === b.aggregateScoreline
-    ) {
+    } else if (a.points === b.points && a.goalBilans === b.goalBilans) {
       return b.scoredGoals - a.scoredGoals;
     } else {
-      return b.aggregateScoreline - a.aggregateScoreline;
+      return b.goalBilans - a.goalBilans;
     }
   });
 }
@@ -254,9 +251,9 @@ function updateMatch(index: number): void {
     return;
   }
 
-  leagueTournament.value.matches[index].is_played = true;
+  leagueTournament.value.matches[index].played = true;
   endPosibility = leagueTournament.value.matches.every(
-    (match: Match) => match.is_played === true
+    (match: SingleMatch) => match.played === true
   );
   if (typeof id === "string") {
     updateLeague(id);
@@ -264,18 +261,18 @@ function updateMatch(index: number): void {
 }
 
 function restoreMatch(index: number): void {
-  leagueTournament.value.matches[index].is_played = false;
+  leagueTournament.value.matches[index].played = false;
 }
 
 async function updateLeague(id: string): Promise<void> {
   await updateDoc(doc(leaguesCollectionRef, id), {
-    is_completed: leagueTournament.value.is_completed,
+    completed: leagueTournament.value.completed,
     matches: leagueTournament.value.matches,
   });
 }
 
 function endTournament(): void {
-  leagueTournament.value.is_completed = true;
+  leagueTournament.value.completed = true;
   if (typeof id === "string") {
     updateLeague(id);
   }
@@ -316,7 +313,7 @@ function getLeagueTournament(id: string): void {
       user: users.value.find((user: User) => user.id === doc.data()?.user_uuid),
       matches: doc.data()?.matches,
       players: doc.data()?.players,
-      is_completed: doc.data()?.is_completed,
+      completed: doc.data()?.completed,
     };
     createTable();
     updateTable();
@@ -333,7 +330,6 @@ onMounted(async () => {
 </script>
 
 <style lang="scss">
-// Alternatywna opcja kolorowania tabeli
 // .table-league {
 //   tr:first-child td {
 //     background-color: rgb(255, 255, 142);
@@ -345,4 +341,5 @@ onMounted(async () => {
 //     background-color: rgb(141, 47, 47);
 //   }
 // }
+// zadanie domowe: sprawdzić jak odwołać się do second i third child i pokolorować pole
 </style>

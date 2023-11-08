@@ -1,14 +1,14 @@
 import User from "@/types/User";
-import SingleMatch from "../SingleMatch";
+import Match from "../Match";
 
 type LeagueTournament = {
   name: string;
   date: string;
   id: string;
   user: User | undefined;
-  matches: SingleMatch[];
+  matches: Match[];
   players: string[];
-  completed: boolean;
+  is_completed: boolean;
 };
 
 export default LeagueTournament;

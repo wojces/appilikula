@@ -1,12 +1,12 @@
 <template>
   <form ref="form" class="container my-5 p-5 border">
     <div class="title">
-      <h1>Liga</h1>
+      <h1>Puchar</h1>
     </div>
     <div class="tournament-name text-start my-5">
-      <label for="tournamentName" class="form-label fw-bold"
-        >Nazwa turnieju</label
-      >
+      <label for="tournamentName" class="form-label fw-bold">
+        Nazwa turnieju
+      </label>
       <input
         type="text"
         class="form-control my-3"
@@ -30,7 +30,7 @@
               required
             />
           </div>
-          <div v-if="index <= 2" class="col-1"></div>
+          <div v-if="index <= 3" class="col-1"></div>
           <div v-else class="col-1">
             <button
               type="button"
@@ -55,7 +55,7 @@
     </div>
     <div class="second-match form-check text-start my-3">
       <label class="form-check-label fw-bold" for="secondMatch">
-        Dwumecz
+        Dwumecz (oprócz finału)
       </label>
       <input
         class="form-check-input"
@@ -64,13 +64,23 @@
         v-model="secondMatch"
       />
     </div>
+    <div class="third-place-match form-check text-start my-3">
+      <label class="form-check-label fw-bold" for="thirdPlaceMatch">
+        Mecz o 3 miejsce (bez dwumeczu)
+      </label>
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="thirdPlaceMatch"
+        v-model="thirdPlaceMatch"
+      />
+    </div>
     <div class="create-tournament">
-      <button
-        @click.prevent="addLeague"
-        type="submit"
-        class="btn btn-secondary"
-      >
+      <button @click.prevent="addCup" type="submit" class="btn btn-secondary">
         Utwórz turniej
+      </button>
+      <button @click.prevent="test" type="submit" class="btn btn-secondary">
+        testowy
       </button>
     </div>
   </form>
@@ -85,18 +95,19 @@ import "firebase/compat/firestore";
 import firebase from "firebase/compat/app";
 import router from "@/router";
 
-const leagueCollectionRef = collection(db, "league");
+const cupCollectionRef = collection(db, "cup");
 
 const form = ref(null);
 let name = ref("");
 let secondMatch = ref(false);
-let players: Ref<string[]> = ref(["", "", ""]);
+let thirdPlaceMatch = ref(false);
+let players: Ref<string[]> = ref(["", "", "", ""]);
 let matches: Ref<Match[]> = ref([]);
 let userId = "8IVuu2jePfH031T3HWz0";
 let addPlayerDisability = false;
 
 function addPlayerInput(): void {
-  if (players.value.length < 20) {
+  if (players.value.length < 16) {
     players.value.push("");
   } else {
     addPlayerDisability = true;
@@ -107,30 +118,34 @@ function removePlayerInput(index: number): void {
   players.value.splice(index, 1);
 }
 
-function shuffle(match: Match[]): void {
-  for (let i = match.length - 1; i > 0; i--) {
+function shuffle(players: string[]) {
+  for (let i = players.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
-    [match[i], match[j]] = [match[j], match[i]];
+    [players[i], players[j]] = [players[j], players[i]];
   }
 }
 
+function test() {
+  addMatches();
+  console.log(matches.value);
+}
+
 function addMatches(): void {
+  shuffle(players.value);
   let matchesArray: Match[] = [];
   let secondMatchesArray: Match[] = [];
 
-  players.value.forEach((player: string, index: number) => {
-    for (let j = index + 1; j < players.value.length; j++) {
-      let match: Match = {
-        player_a: player,
-        player_b: players.value[j],
-        player_a_score: NaN,
-        player_b_score: NaN,
-        is_played: false,
-      };
-      matchesArray.push(match);
-    }
-  });
-  shuffle(matchesArray);
+  for (let i = 0; i < players.value.length; i += 2) {
+    let match: Match = {
+      player_a: players.value[i],
+      player_b: players.value[i + 1],
+      player_a_score: NaN,
+      player_b_score: NaN,
+      is_played: false,
+    };
+    matchesArray.push(match);
+  }
+
   if (secondMatch.value === true) {
     for (let i = 0; i < matchesArray.length; i++) {
       const currentMatch = matchesArray[i];
@@ -144,26 +159,27 @@ function addMatches(): void {
   matches.value = matchesArray.concat(secondMatchesArray);
 }
 
-async function addLeague(): Promise<void> {
+async function addCup(): Promise<void> {
   if (form.value && !(form.value as HTMLFormElement).checkValidity()) {
     (form.value as HTMLFormElement).reportValidity();
     return;
   }
 
   addMatches();
-  const docRef = await addDoc(leagueCollectionRef, {
+  const docRef = await addDoc(cupCollectionRef, {
     date: firebase.firestore.FieldValue.serverTimestamp(),
     name: name.value,
     second_match: secondMatch.value,
+    third_place_match: thirdPlaceMatch.value,
     matches: matches.value,
     players: players.value,
     user_uuid: userId,
     is_completed: false,
   });
-  console.log("League written with ID: ", docRef.id);
+  console.log("Cup written with ID: ", docRef.id);
 
   const tournamentId: string = docRef.id;
-  router.push("/league/" + tournamentId);
+  router.push("/cup/" + tournamentId);
 }
 </script>
 

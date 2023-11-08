@@ -6,7 +6,7 @@ type LeagueScore = {
   lost: number;
   scoredGoals: number;
   lostGoals: number;
-  goalBilans: number;
+  aggregateScoreline: number;
   points: number;
 };
 

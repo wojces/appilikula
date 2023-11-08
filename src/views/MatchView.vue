@@ -135,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import Match from "@/types/Match";
+import MatchView from "@/types/MatchView";
 import User from "@/types/User";
 import type { Ref } from "vue";
 import { ref, onMounted, watch } from "vue";
@@ -163,7 +163,7 @@ const selectedPlayerB = ref("");
 let enteredScoreA = ref(0);
 let enteredScoreB = ref(0);
 let users: Ref<User[]> = ref([]);
-let matchStats: Ref<Match[]> = ref([]);
+let matchStats: Ref<MatchView[]> = ref([]);
 let selectableUsers = users;
 
 async function addMatchToStats(): Promise<void> {
@@ -234,7 +234,7 @@ function getUsers(): void {
 
 function getMatches(): void {
   onSnapshot(matchesCollectionQuerry, (querySnapshot) => {
-    const matches: Match[] = [];
+    const matches: MatchView[] = [];
     querySnapshot.forEach((doc) => {
       const match = {
         match_id: doc.id,

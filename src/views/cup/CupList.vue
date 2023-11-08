@@ -21,7 +21,7 @@
         <div class="col-2">{{ league.user?.name }}</div>
         <div class="col-1">{{ league.playersNumber }}</div>
         <div class="col-2">
-          {{ league.is_completed ? "zakończony" : "aktywny" }}
+          {{ league.completed ? "zakończony" : "aktywny" }}
         </div>
       </div>
     </div>
@@ -83,7 +83,7 @@ function getLeagues(): void {
           (user: User) => user.id === doc.data().user_uuid
         ),
         playersNumber: doc.data().players.length,
-        is_completed: doc.data().is_completed,
+        completed: doc.data().completed,
       };
       leagueStats.push(league);
     });

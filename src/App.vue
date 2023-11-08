@@ -2,9 +2,9 @@
   <nav class="navbar navbar-expand-lg bg-secondary fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <router-link class="link-dark link-opacity-50-hover" to="/"
-          >Appilikula</router-link
-        >
+        <router-link class="link-dark link-opacity-50-hover" to="/">
+          Appilikula
+        </router-link>
       </a>
 
       <button
@@ -19,35 +19,31 @@
       <div class="collapse navbar-collapse" id="navmenu">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link"
-              ><router-link class="link-dark link-opacity-25-hover" to="/league"
-                >Liga</router-link
-              ></a
-            >
+            <a class="nav-link">
+              <router-link class="link-dark link-opacity-25-hover" to="/league">
+                Liga
+              </router-link>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link"
-              ><router-link class="link-dark link-opacity-25-hover" to="/cup"
-                >Puchar</router-link
-              ></a
-            >
+            <a class="nav-link">
+              <router-link class="link-dark link-opacity-25-hover" to="/cup">
+                Puchar
+              </router-link>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link"
-              ><router-link
+            <a class="nav-link">
+              <router-link
                 class="link-dark link-opacity-25-hover"
                 to="/group-playoff"
               >
                 Grupa Play-Off
-              </router-link></a
-            >
+              </router-link>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link"
-              ><router-link class="link-dark link-opacity-25-hover" to="/match">
-                Mecz
-              </router-link></a
-            >
+            <a class="nav-link">Wyloguj</a>
           </li>
         </ul>
       </div>
