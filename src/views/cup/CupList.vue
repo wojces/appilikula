@@ -1,7 +1,7 @@
 <template>
   <div class="container my-5 p-5 border">
     <div class="title">
-      <h1>Turnieje ligowe</h1>
+      <h1>Puchary</h1>
     </div>
     <div class="list my-5">
       <div class="row fw-bold my-3">
@@ -12,7 +12,7 @@
         <div class="col-1">liczba graczy</div>
         <div class="col-2">status</div>
       </div>
-      <div class="row my-1" v-for="(league, index) in leagues" :key="index">
+      <div class="row my-1" v-for="(league, index) in cups" :key="index">
         <div class="col-2">{{ league.name }}</div>
         <div class="col-2">{{ league.date }}</div>
         <div class="col-3">
@@ -21,7 +21,7 @@
         <div class="col-2">{{ league.user?.name }}</div>
         <div class="col-1">{{ league.playersNumber }}</div>
         <div class="col-2">
-          {{ league.completed ? "zakończony" : "aktywny" }}
+          {{ league.is_completed ? "zakończony" : "aktywny" }}
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import League from "@/types/league/League";
+import Cup from "@/types/cup/Cup";
 import User from "@/types/User";
 import type { Ref } from "vue";
 import { ref, onMounted } from "vue";
@@ -38,14 +38,11 @@ import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import "firebase/compat/firestore";
 
 let users: Ref<User[]> = ref([]);
-let leagues: Ref<League[]> = ref([]);
+let cups: Ref<Cup[]> = ref([]);
 
-const leaguesCollectionRef = collection(db, "league");
+const cupCollectionRef = collection(db, "cup");
 const usersCollectionRef = collection(db, "users");
-const leaguesCollectionQuerry = query(
-  leaguesCollectionRef,
-  orderBy("date", "desc")
-);
+const cupCollectionQuerry = query(cupCollectionRef, orderBy("date", "desc"));
 
 function timestampToDate(timestamp: number): string {
   let unix_timestamp = timestamp;
@@ -71,11 +68,11 @@ function getUsers(): void {
   });
 }
 
-function getLeagues(): void {
-  onSnapshot(leaguesCollectionQuerry, (querySnapshot) => {
-    const leagueStats: League[] = [];
+function getCups(): void {
+  onSnapshot(cupCollectionQuerry, (querySnapshot) => {
+    const cupStats: Cup[] = [];
     querySnapshot.forEach((doc) => {
-      const league = {
+      const cup = {
         name: doc.data().name,
         date: timestampToDate(doc.data().date?.seconds),
         id: doc.id,
@@ -83,16 +80,16 @@ function getLeagues(): void {
           (user: User) => user.id === doc.data().user_uuid
         ),
         playersNumber: doc.data().players.length,
-        completed: doc.data().completed,
+        is_completed: doc.data().is_completed,
       };
-      leagueStats.push(league);
+      cupStats.push(cup);
     });
-    leagues.value = leagueStats;
+    cups.value = cupStats;
   });
 }
 
 onMounted(async () => {
   getUsers();
-  getLeagues();
+  getCups();
 });
 </script>

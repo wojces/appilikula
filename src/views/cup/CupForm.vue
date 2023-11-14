@@ -31,7 +31,16 @@
             />
           </div>
           <div v-if="index <= 3" class="col-1"></div>
-          <div v-else class="col-1">
+          <div v-else-if="index / 4 == 1" class="col-1">
+            <button
+              type="button"
+              class="btn btn btn-secondary"
+              @click="removePlayerInput(index)"
+            >
+              X
+            </button>
+          </div>
+          <div v-else-if="index / 4 == 2" class="col-1">
             <button
               type="button"
               class="btn btn btn-secondary"
@@ -53,20 +62,9 @@
         </button>
       </div>
     </div>
-    <div class="second-match form-check text-start my-3">
-      <label class="form-check-label fw-bold" for="secondMatch">
-        Dwumecz (oprócz finału)
-      </label>
-      <input
-        class="form-check-input"
-        type="checkbox"
-        id="secondMatch"
-        v-model="secondMatch"
-      />
-    </div>
     <div class="third-place-match form-check text-start my-3">
       <label class="form-check-label fw-bold" for="thirdPlaceMatch">
-        Mecz o 3 miejsce (bez dwumeczu)
+        Mecz o 3 miejsce
       </label>
       <input
         class="form-check-input"
@@ -79,9 +77,9 @@
       <button @click.prevent="addCup" type="submit" class="btn btn-secondary">
         Utwórz turniej
       </button>
-      <button @click.prevent="test" type="submit" class="btn btn-secondary">
+      <!-- <button @click.prevent="test" type="submit" class="btn btn-secondary">
         testowy
-      </button>
+      </button> -->
     </div>
   </form>
 </template>
@@ -99,7 +97,6 @@ const cupCollectionRef = collection(db, "cup");
 
 const form = ref(null);
 let name = ref("");
-let secondMatch = ref(false);
 let thirdPlaceMatch = ref(false);
 let players: Ref<string[]> = ref(["", "", "", ""]);
 let matches: Ref<Match[]> = ref([]);
@@ -107,15 +104,23 @@ let userId = "8IVuu2jePfH031T3HWz0";
 let addPlayerDisability = false;
 
 function addPlayerInput(): void {
-  if (players.value.length < 16) {
-    players.value.push("");
+  if (players.value.length < 8) {
+    players.value.push("", "", "", "");
+  } else if (players.value.length < 16) {
+    players.value.push("", "", "", "", "", "", "", "");
   } else {
     addPlayerDisability = true;
   }
 }
 
 function removePlayerInput(index: number): void {
-  players.value.splice(index, 1);
+  if (players.value.length > 3 && players.value.length <= 7) {
+    players.value.splice(index, 4);
+    addPlayerDisability = false;
+  } else if (players.value.length > 7) {
+    players.value.splice(index, 8);
+    addPlayerDisability = false;
+  }
 }
 
 function shuffle(players: string[]) {
@@ -125,15 +130,14 @@ function shuffle(players: string[]) {
   }
 }
 
-function test() {
-  addMatches();
-  console.log(matches.value);
-}
+// function test() {
+//   addMatches();
+//   console.log(matches.value);
+// }
 
 function addMatches(): void {
   shuffle(players.value);
   let matchesArray: Match[] = [];
-  let secondMatchesArray: Match[] = [];
 
   for (let i = 0; i < players.value.length; i += 2) {
     let match: Match = {
@@ -146,17 +150,7 @@ function addMatches(): void {
     matchesArray.push(match);
   }
 
-  if (secondMatch.value === true) {
-    for (let i = 0; i < matchesArray.length; i++) {
-      const currentMatch = matchesArray[i];
-      secondMatchesArray.push({
-        ...currentMatch,
-        player_a: currentMatch.player_b,
-        player_b: currentMatch.player_a,
-      });
-    }
-  }
-  matches.value = matchesArray.concat(secondMatchesArray);
+  matches.value = matchesArray;
 }
 
 async function addCup(): Promise<void> {
@@ -169,7 +163,6 @@ async function addCup(): Promise<void> {
   const docRef = await addDoc(cupCollectionRef, {
     date: firebase.firestore.FieldValue.serverTimestamp(),
     name: name.value,
-    second_match: secondMatch.value,
     third_place_match: thirdPlaceMatch.value,
     matches: matches.value,
     players: players.value,
