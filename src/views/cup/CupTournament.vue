@@ -1,115 +1,86 @@
 <template>
   <div
-    v-if="Object.keys(leagueTournament) && Object.keys(leagueTournament).length"
+    v-if="Object.keys(cupTournament) && Object.keys(cupTournament).length"
     class="container my-5 p-5 border"
   >
     <div class="title">
       <div class="d-flex flex-row gap-3 description">
-        <p>Data utworzenia: {{ leagueTournament.date }}</p>
-        <p>Utworzył: {{ leagueTournament.user?.name }}</p>
+        <p>Data utworzenia: {{ cupTournament.date }}</p>
+        <p>Utworzył: {{ cupTournament.user?.name }}</p>
         <p>
-          Status: {{ leagueTournament.completed ? "Zakończony" : "Aktywny" }}
+          Status: {{ cupTournament.is_completed ? "Zakończony" : "Aktywny" }}
         </p>
       </div>
-      <h1>Turniej: {{ leagueTournament.name }}</h1>
+      <h1>Turniej: {{ cupTournament.name }}</h1>
     </div>
-    <div class="table my-5">
-      <h5 class="fw-bold mb-4">Tabela</h5>
-      <table class="table table-league">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Drużyna</th>
-            <th scope="col">M</th>
-            <th scope="col">W</th>
-            <th scope="col">R</th>
-            <th scope="col">P</th>
-            <th scope="col">B</th>
-            <th scope="col">RB</th>
-            <th scope="col">P</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            :class="{
-              'table-warning': index === 0,
-              'table-secondary': index === 1,
-              'table-danger': index === 2,
-            }"
-            v-for="(player, index) in leaguePlayersScore"
-            :key="index"
-          >
-            <td scope="row">{{ index + 1 }}</td>
-            <td>{{ player.name }}</td>
-            <td>{{ player.matches }}</td>
-            <td>{{ player.wins }}</td>
-            <td>{{ player.draws }}</td>
-            <td>{{ player.lost }}</td>
-            <td>{{ player.scoredGoals }}:{{ player.lostGoals }}</td>
-            <td>{{ player.goalBilans }}</td>
-            <td class="fw-bold">{{ player.points }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="matches my-5">
-      <h5 class="fw-bold mb-4">Mecze</h5>
+
+    <div class="tournament-bracket my-5">
+      <h5 class="fw-bold mb-4">Drabinka</h5>
       <div class="row fw-bold my-3">
-        <div class="col-1">#</div>
-        <div class="col-3">Gracz A</div>
-        <div class="col-2">Wynik Gracza A</div>
-        <div class="col-3">Gracz B</div>
-        <div class="col-2">Wynik Gracza B</div>
-        <div class="col-1"></div>
+        <div class="col-4">ćwierćfinał</div>
+        <div class="col-4">półfinał</div>
+        <div class="col-4">finał</div>
       </div>
-      <form
-        ref="form"
-        class="row my-1"
-        v-for="(match, index) in leagueTournament.matches"
-        :key="index"
-      >
-        <div class="col-1">{{ index + 1 }}</div>
-        <div class="col-3">{{ match.player_a }}</div>
-        <div class="col-2">
-          <input
-            type="number"
-            min="0"
-            max="99"
-            class="form-control"
-            v-model="leagueTournament.matches[index].player_a_score"
-            :disabled="leagueTournament.matches[index].played"
-            required
-          />
-        </div>
-        <div class="col-3">{{ match.player_b }}</div>
-        <div class="col-2">
-          <input
-            type="number"
-            min="0"
-            max="99"
-            class="form-control"
-            v-model="leagueTournament.matches[index].player_b_score"
-            :disabled="leagueTournament.matches[index].played"
-            required
-          />
-        </div>
-        <div class="col-1">
-          <div v-if="leagueTournament.completed"></div>
-          <button
-            v-else-if="leagueTournament.matches[index].played"
-            class="btn btn-outline-secondary btn-sm"
-            @click="restoreMatch(index)"
-          >
-            Cofnij
-          </button>
-          <button
-            v-else
-            type="submit"
-            class="btn btn-outline-success btn-sm"
-            @click.prevent="updateMatch(index)"
-          >
-            Zatwierdź
-          </button>
+      <form ref="form">
+        <div class="row my-3">
+          <div class="col-4">
+            <div
+              class="row my-3 py-1 border rounded-4 align-items-center d-flex justify-content-evenly"
+              v-for="(match, index) in cupTournament.matches"
+              :key="index"
+            >
+              <div class="col-2">
+                <div class="row my-3">{{ match.player_a }}</div>
+                <div class="row my-3">{{ match.player_b }}</div>
+              </div>
+              <div class="col-2">
+                <div class="row my-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="99"
+                    class="form-control text-center"
+                    v-model="cupTournament.matches[index].player_a_score"
+                    :disabled="cupTournament.matches[index].is_played"
+                    required
+                  />
+                </div>
+                <div class="row my-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="99"
+                    class="form-control text-center"
+                    v-model="cupTournament.matches[index].player_b_score"
+                    :disabled="cupTournament.matches[index].is_played"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="row my-2">
+                  <div v-if="cupTournament.is_completed"></div>
+                  <button
+                    v-else-if="cupTournament.matches[index].is_played"
+                    class="btn btn-outline-secondary btn-sm"
+                    @click="restoreMatch(index)"
+                  >
+                    Cofnij
+                  </button>
+                  <button
+                    v-else
+                    type="submit"
+                    class="btn btn-outline-success btn-sm"
+                    @click.prevent="updateMatch(index)"
+                  >
+                    ✓
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-4">1/4</div>
+          <div class="col-4">półfinał</div>
         </div>
       </form>
     </div>
@@ -126,120 +97,25 @@
 </template>
 
 <script setup lang="ts">
-import LeagueScore from "@/types/league/LeagueScore";
-import LeagueTournament from "@/types/league/LeagueTournament";
+import CupTournament from "@/types/cup/CupTournament";
 import User from "@/types/User";
-import SingleMatch from "@/types/SingleMatch";
+import Match from "@/types/Match";
 
 import { useRoute } from "vue-router";
 import { doc, onSnapshot, collection, updateDoc } from "firebase/firestore";
 import { Ref, ref, onMounted } from "vue";
 import db from "@/firebase/firebaseInit";
 
-const leaguesCollectionRef = collection(db, "league");
+const cupsCollectionRef = collection(db, "cup");
 const usersCollectionRef = collection(db, "users");
 
 let id: string | string[] = "";
 const form = ref(null);
 const route = useRoute();
-let leagueTournament = ref({} as LeagueTournament);
+let cupTournament = ref({} as CupTournament);
 let users: Ref<User[]> = ref([]);
 
-let leaguePlayersScore = ref([] as LeagueScore[]);
 let endPosibility = false;
-
-function createTable(): void {
-  const playersScore = [] as LeagueScore[];
-  leagueTournament.value.players.forEach((player: string) => {
-    const leaguePlayer = {
-      name: player,
-      matches: 0,
-      wins: 0,
-      draws: 0,
-      lost: 0,
-      scoredGoals: 0,
-      lostGoals: 0,
-      get goalBilans() {
-        return this.scoredGoals - this.lostGoals;
-      },
-      get points() {
-        return this.wins * 3 + this.draws * 1;
-      },
-    };
-    playersScore.push(leaguePlayer);
-  });
-  leaguePlayersScore.value = playersScore;
-}
-
-function updateTable(): void {
-  leagueTournament.value.matches.forEach((match: SingleMatch) => {
-    let playerAIndex = leaguePlayersScore.value.findIndex(
-      (player: LeagueScore) => player.name === match.player_a
-    );
-    let playerBIndex = leaguePlayersScore.value.findIndex(
-      (player: LeagueScore) => player.name === match.player_b
-    );
-
-    if (match.player_a_score > match.player_b_score) {
-      leaguePlayersScore.value[playerAIndex].matches++;
-      leaguePlayersScore.value[playerAIndex].wins++;
-      leaguePlayersScore.value[playerAIndex].scoredGoals =
-        leaguePlayersScore.value[playerAIndex].scoredGoals +
-        match.player_a_score;
-      leaguePlayersScore.value[playerAIndex].lostGoals =
-        leaguePlayersScore.value[playerAIndex].lostGoals + match.player_b_score;
-
-      leaguePlayersScore.value[playerBIndex].matches++;
-      leaguePlayersScore.value[playerBIndex].lost++;
-      leaguePlayersScore.value[playerBIndex].scoredGoals =
-        leaguePlayersScore.value[playerBIndex].scoredGoals +
-        match.player_b_score;
-      leaguePlayersScore.value[playerBIndex].lostGoals =
-        leaguePlayersScore.value[playerBIndex].lostGoals + match.player_a_score;
-    } else if (match.player_a_score < match.player_b_score) {
-      leaguePlayersScore.value[playerBIndex].matches++;
-      leaguePlayersScore.value[playerBIndex].wins++;
-      leaguePlayersScore.value[playerBIndex].scoredGoals =
-        leaguePlayersScore.value[playerBIndex].scoredGoals +
-        match.player_b_score;
-      leaguePlayersScore.value[playerBIndex].lostGoals =
-        leaguePlayersScore.value[playerBIndex].lostGoals + match.player_a_score;
-
-      leaguePlayersScore.value[playerAIndex].matches++;
-      leaguePlayersScore.value[playerAIndex].lost++;
-      leaguePlayersScore.value[playerAIndex].scoredGoals =
-        leaguePlayersScore.value[playerAIndex].scoredGoals +
-        match.player_a_score;
-      leaguePlayersScore.value[playerAIndex].lostGoals =
-        leaguePlayersScore.value[playerAIndex].lostGoals + match.player_b_score;
-    } else if (match.player_a_score === match.player_b_score) {
-      leaguePlayersScore.value[playerAIndex].matches++;
-      leaguePlayersScore.value[playerAIndex].draws++;
-      leaguePlayersScore.value[playerAIndex].scoredGoals =
-        leaguePlayersScore.value[playerAIndex].scoredGoals +
-        match.player_a_score;
-      leaguePlayersScore.value[playerAIndex].lostGoals =
-        leaguePlayersScore.value[playerAIndex].lostGoals + match.player_b_score;
-
-      leaguePlayersScore.value[playerBIndex].matches++;
-      leaguePlayersScore.value[playerBIndex].draws++;
-      leaguePlayersScore.value[playerBIndex].scoredGoals =
-        leaguePlayersScore.value[playerBIndex].scoredGoals +
-        match.player_b_score;
-      leaguePlayersScore.value[playerBIndex].lostGoals =
-        leaguePlayersScore.value[playerBIndex].lostGoals + match.player_a_score;
-    }
-  });
-  leaguePlayersScore.value.sort((a: LeagueScore, b: LeagueScore) => {
-    if (a.points !== b.points) {
-      return b.points - a.points;
-    } else if (a.points === b.points && a.goalBilans === b.goalBilans) {
-      return b.scoredGoals - a.scoredGoals;
-    } else {
-      return b.goalBilans - a.goalBilans;
-    }
-  });
-}
 
 function updateMatch(index: number): void {
   if (
@@ -251,30 +127,30 @@ function updateMatch(index: number): void {
     return;
   }
 
-  leagueTournament.value.matches[index].played = true;
-  endPosibility = leagueTournament.value.matches.every(
-    (match: SingleMatch) => match.played === true
+  cupTournament.value.matches[index].is_played = true;
+  endPosibility = cupTournament.value.matches.every(
+    (match: Match) => match.is_played === true
   );
   if (typeof id === "string") {
-    updateLeague(id);
+    updateCup(id);
   }
 }
 
 function restoreMatch(index: number): void {
-  leagueTournament.value.matches[index].played = false;
+  cupTournament.value.matches[index].is_played = false;
 }
 
-async function updateLeague(id: string): Promise<void> {
-  await updateDoc(doc(leaguesCollectionRef, id), {
-    completed: leagueTournament.value.completed,
-    matches: leagueTournament.value.matches,
+async function updateCup(id: string): Promise<void> {
+  await updateDoc(doc(cupsCollectionRef, id), {
+    is_completed: cupTournament.value.is_completed,
+    matches: cupTournament.value.matches,
   });
 }
 
 function endTournament(): void {
-  leagueTournament.value.completed = true;
+  cupTournament.value.is_completed = true;
   if (typeof id === "string") {
-    updateLeague(id);
+    updateCup(id);
   }
   endPosibility = false;
   window.scrollTo(0, 0);
@@ -304,19 +180,18 @@ function getUsers(): void {
   });
 }
 
-function getLeagueTournament(id: string): void {
-  onSnapshot(doc(db, "league", id), (doc) => {
-    leagueTournament.value = {
+function getCupTournament(id: string): void {
+  onSnapshot(doc(db, "cup", id), (doc) => {
+    cupTournament.value = {
       name: doc.data()?.name,
       date: timestampToDate(doc.data()?.date?.seconds),
       id: doc.id,
       user: users.value.find((user: User) => user.id === doc.data()?.user_uuid),
       matches: doc.data()?.matches,
       players: doc.data()?.players,
-      completed: doc.data()?.completed,
+      is_completed: doc.data()?.is_completed,
+      thirdPlaceMatch: doc.data()?.third_place_match,
     };
-    createTable();
-    updateTable();
   });
 }
 
@@ -324,22 +199,9 @@ onMounted(async () => {
   id = route.params.id;
   getUsers();
   if (typeof id === "string") {
-    getLeagueTournament(id);
+    getCupTournament(id);
   }
 });
 </script>
 
-<style lang="scss">
-// .table-league {
-//   tr:first-child td {
-//     background-color: rgb(255, 255, 142);
-//   }
-//   tr:nth-child(2) td {
-//     background-color: rgb(204, 204, 204);
-//   }
-//   tr:nth-child(3) td {
-//     background-color: rgb(141, 47, 47);
-//   }
-// }
-// zadanie domowe: sprawdzić jak odwołać się do second i third child i pokolorować pole
-</style>
+<style lang="scss"></style>
