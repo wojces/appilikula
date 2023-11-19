@@ -1,7 +1,7 @@
 <template>
   <form ref="form" class="container my-5 p-5 border">
     <div class="title">
-      <h1>Liga</h1>
+      <h1>Grupa + faza pucharowa</h1>
     </div>
     <div class="tournament-name text-start my-5">
       <label for="tournamentName" class="form-label fw-bold"
@@ -30,7 +30,7 @@
               required
             />
           </div>
-          <div v-if="index <= 2" class="col-1"></div>
+          <div v-if="index <= 3" class="col-1"></div>
           <div v-else class="col-1">
             <button
               type="button"
@@ -55,7 +55,7 @@
     </div>
     <div class="second-match form-check text-start my-3">
       <label class="form-check-label fw-bold" for="secondMatch">
-        Dwumecz
+        Dwumecz w fazie grupowej
       </label>
       <input
         class="form-check-input"
@@ -66,7 +66,7 @@
     </div>
     <div class="create-tournament">
       <button
-        @click.prevent="addLeague"
+        @click.prevent="addGroupPlayOff"
         type="submit"
         class="btn btn-secondary"
       >
@@ -85,21 +85,21 @@ import "firebase/compat/firestore";
 import firebase from "firebase/compat/app";
 import router from "@/router";
 
-const leagueCollectionRef = collection(db, "league");
+const groupPlayOffCollectionRef = collection(db, "group_play_off");
 
 const form = ref(null);
 let name = ref("");
 let secondMatch = ref(false);
-let players: Ref<string[]> = ref(["", "", ""]);
+let players: Ref<string[]> = ref(["", "", "", ""]);
 let matches: Ref<Match[]> = ref([]);
 let userId = "8IVuu2jePfH031T3HWz0";
 
-let addPlayerDisability = computed(() => {
-  return players.value.length == 20;
+const addPlayerDisability = computed(() => {
+  return players.value.length == 16;
 });
 
 function addPlayerInput(): void {
-  if (players.value.length < 20) {
+  if (players.value.length < 16) {
     players.value.push("");
   }
 }
@@ -145,14 +145,14 @@ function addMatches(): void {
   matches.value = matchesArray.concat(secondMatchesArray);
 }
 
-async function addLeague(): Promise<void> {
+async function addGroupPlayOff(): Promise<void> {
   if (form.value && !(form.value as HTMLFormElement).checkValidity()) {
     (form.value as HTMLFormElement).reportValidity();
     return;
   }
 
   addMatches();
-  const docRef = await addDoc(leagueCollectionRef, {
+  const docRef = await addDoc(groupPlayOffCollectionRef, {
     date: firebase.firestore.FieldValue.serverTimestamp(),
     name: name.value,
     second_match: secondMatch.value,

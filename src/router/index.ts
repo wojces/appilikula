@@ -7,7 +7,9 @@ import LeagueTournament from "@/views/league/LeagueTournament.vue";
 import CupForm from "@/views/cup/CupForm.vue";
 import CupList from "@/views/cup/CupList.vue";
 import CupTournament from "@/views/cup/CupTournament.vue";
-import GroupPlayOffView from "@/views/groupPlayOff/GroupPlayOffView.vue";
+import GroupPlayOffForm from "@/views/groupPlayOff/GroupPlayOffForm.vue";
+import GroupPlayOffList from "@/views/groupPlayOff/GroupPlayOffList.vue";
+import GroupPlayOffTournament from "@/views/groupPlayOff/GroupPlayOffTournament.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -46,9 +48,19 @@ const routes: Array<RouteRecordRaw> = [
     component: CupTournament,
   },
   {
-    path: "/group-playoff/:tournament?",
-    name: "group-playoff",
-    component: GroupPlayOffView,
+    path: "/group-play-off",
+    name: "groupPlayOff",
+    component: GroupPlayOffForm,
+  },
+  {
+    path: "/group-play-off/list",
+    name: "groupPlayOffList",
+    component: GroupPlayOffList,
+  },
+  {
+    path: "/group-play-off/:id",
+    name: "groupPlayOffTournament",
+    component: GroupPlayOffTournament,
   },
   {
     path: "/match",

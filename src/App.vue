@@ -36,7 +36,7 @@
             <a class="nav-link">
               <router-link
                 class="link-dark link-opacity-25-hover"
-                to="/group-playoff"
+                to="/group-play-off"
               >
                 Grupa Play-Off
               </router-link>

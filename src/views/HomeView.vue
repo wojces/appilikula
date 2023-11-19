@@ -28,8 +28,7 @@
               <h3 class="card-title mb-3">Puchar</h3>
               <p class="card-text">
                 Rozgrywka dla 4, 8 lub 16 zespołów. Mecze rozgrywane w formie
-                drabinki. <br />
-                Mecz o trzecie miejsce jako opcja.
+                drabinki.
               </p>
               <router-link class="link-light btn btn-dark" to="/cup">
                 Zagraj
@@ -50,7 +49,7 @@
               </p>
               <router-link
                 class="link-light btn btn-primary"
-                to="/group-playoff"
+                to="/group-play-off"
               >
                 Zagraj
               </router-link>

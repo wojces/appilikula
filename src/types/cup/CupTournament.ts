@@ -6,10 +6,17 @@ type CupTournament = {
   date: string;
   id: string;
   user: User | undefined;
-  matches: Match[];
+  matches: {
+    level1: Match[];
+    level2: Match[];
+    level3: Match[];
+    level4: Match[];
+    level1IsCompleted: boolean;
+    level2IsCompleted: boolean;
+    level3IsCompleted: boolean;
+  };
   players: string[];
   is_completed: boolean;
-  thirdPlaceMatch: boolean;
 };
 
 export default CupTournament;
