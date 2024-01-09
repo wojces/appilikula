@@ -1,12 +1,12 @@
 <template>
   <form ref="form" class="container my-5 p-5 border">
     <div class="title">
-      <h1>Liga</h1>
+      <h1>Puchar</h1>
     </div>
     <div class="tournament-name text-start my-5">
-      <label for="tournamentName" class="form-label fw-bold"
-        >Nazwa turnieju</label
-      >
+      <label for="tournamentName" class="form-label fw-bold">
+        Nazwa turnieju
+      </label>
       <input
         type="text"
         class="form-control my-3"
@@ -30,12 +30,21 @@
               required
             />
           </div>
-          <div v-if="index <= 2" class="col-1"></div>
-          <div v-else class="col-1">
+          <div v-if="index <= 3" class="col-1"></div>
+          <div v-else-if="index / 4 == 1" class="col-1">
             <button
               type="button"
               class="btn btn btn-secondary"
-              @click="removePlayerInput(index)"
+              @click="removePlayersInput(index)"
+            >
+              X
+            </button>
+          </div>
+          <div v-else-if="index / 4 == 2" class="col-1">
+            <button
+              type="button"
+              class="btn btn btn-secondary"
+              @click="removePlayersInput(index)"
             >
               X
             </button>
@@ -47,29 +56,15 @@
           :disabled="addPlayerDisability"
           type="button"
           class="btn btn btn-secondary my-3"
-          @click="addPlayerInput"
+          @click="addPlayersInput"
         >
           Dodaj gracza
         </button>
       </div>
     </div>
-    <div class="second-match form-check text-start my-3">
-      <label class="form-check-label fw-bold" for="secondMatch">
-        Dwumecz
-      </label>
-      <input
-        class="form-check-input"
-        type="checkbox"
-        id="secondMatch"
-        v-model="secondMatch"
-      />
-    </div>
+
     <div class="create-tournament">
-      <button
-        @click.prevent="addLeague"
-        type="submit"
-        class="btn btn-secondary"
-      >
+      <button @click.prevent="addCup" type="submit" class="btn btn-secondary">
         Utwórz turniej
       </button>
     </div>
@@ -78,93 +73,95 @@
 
 <script setup lang="ts">
 import Match from "@/types/Match";
+import CupMatches from "@/types/cup/CupMatches";
 import { ref, Ref, computed } from "vue";
 import db from "@/firebase/firebaseInit";
 import { collection, addDoc } from "firebase/firestore";
 import "firebase/compat/firestore";
 import firebase from "firebase/compat/app";
 import router from "@/router";
+import shuffle from "@/functions/shuffle";
 
-const leagueCollectionRef = collection(db, "league");
+const cupCollectionRef = collection(db, "cup");
 
 const form = ref(null);
 let name = ref("");
-let secondMatch = ref(false);
-let players: Ref<string[]> = ref(["", "", ""]);
-let matches: Ref<Match[]> = ref([]);
+let players: Ref<string[]> = ref(["", "", "", ""]);
+let matches: Ref<CupMatches> = ref({
+  level1: [],
+  level2: [],
+  level3: [],
+  level4: [],
+  level1IsCompleted: false,
+  level2IsCompleted: false,
+  level3IsCompleted: false,
+});
 let userId = "8IVuu2jePfH031T3HWz0";
-
 let addPlayerDisability = computed(() => {
-  return players.value.length == 20;
+  return players.value.length == 16;
 });
 
-function addPlayerInput(): void {
-  if (players.value.length < 20) {
-    players.value.push("");
+function addPlayersInput(): void {
+  if (players.value.length < 8) {
+    players.value.push("", "", "", "");
+  } else if (players.value.length < 16) {
+    players.value.push("", "", "", "", "", "", "", "");
   }
 }
 
-function removePlayerInput(index: number): void {
-  players.value.splice(index, 1);
-}
-
-function shuffle(match: Match[]): void {
-  for (let i = match.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [match[i], match[j]] = [match[j], match[i]];
+function removePlayersInput(index: number): void {
+  if (players.value.length > 3 && players.value.length <= 7) {
+    players.value.splice(index, 4);
+  } else if (players.value.length > 7) {
+    players.value.splice(index, 8);
   }
 }
 
 function addMatches(): void {
+  shuffle(players.value);
   let matchesArray: Match[] = [];
-  let secondMatchesArray: Match[] = [];
 
-  players.value.forEach((player: string, index: number) => {
-    for (let j = index + 1; j < players.value.length; j++) {
-      let match: Match = {
-        player_a: player,
-        player_b: players.value[j],
-        player_a_score: NaN,
-        player_b_score: NaN,
-        is_played: false,
-      };
-      matchesArray.push(match);
-    }
-  });
-  shuffle(matchesArray);
-  if (secondMatch.value === true) {
-    for (let i = 0; i < matchesArray.length; i++) {
-      const currentMatch = matchesArray[i];
-      secondMatchesArray.push({
-        ...currentMatch,
-        player_a: currentMatch.player_b,
-        player_b: currentMatch.player_a,
-      });
-    }
+  for (let i = 0; i < players.value.length; i += 2) {
+    let match: Match = {
+      player_a: players.value[i],
+      player_b: players.value[i + 1],
+      player_a_score: NaN,
+      player_b_score: NaN,
+      is_played: false,
+    };
+    matchesArray.push(match);
   }
-  matches.value = matchesArray.concat(secondMatchesArray);
+  if (players.value.length === 16) {
+    matches.value.level1 = matchesArray;
+  } else if (players.value.length === 8) {
+    matches.value.level2 = matchesArray;
+    matches.value.level1IsCompleted = true;
+  } else if (players.value.length === 4) {
+    matches.value.level3 = matchesArray;
+    matches.value.level1IsCompleted = true;
+    matches.value.level2IsCompleted = true;
+  }
 }
 
-async function addLeague(): Promise<void> {
+async function addCup(): Promise<void> {
   if (form.value && !(form.value as HTMLFormElement).checkValidity()) {
     (form.value as HTMLFormElement).reportValidity();
     return;
   }
 
   addMatches();
-  const docRef = await addDoc(leagueCollectionRef, {
+  const docRef = await addDoc(cupCollectionRef, {
     date: firebase.firestore.FieldValue.serverTimestamp(),
     name: name.value,
-    second_match: secondMatch.value,
     matches: matches.value,
     players: players.value,
     user_uuid: userId,
     is_completed: false,
   });
-  console.log("League written with ID: ", docRef.id);
+  console.log("Cup written with ID: ", docRef.id);
 
   const tournamentId: string = docRef.id;
-  router.push("/league/" + tournamentId);
+  router.push("/cup/" + tournamentId);
 }
 </script>
 

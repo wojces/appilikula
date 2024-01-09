@@ -1,15 +1,14 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import MatchView from "../views/MatchView.vue";
-import LeagueForm from "@/views/league/LeagueForm.vue";
+import AddLeague from "@/views/league/AddLeague.vue";
 import LeagueList from "@/views/league/LeagueList.vue";
 import LeagueTournament from "@/views/league/LeagueTournament.vue";
-import CupForm from "@/views/cup/CupForm.vue";
+import AddCup from "@/views/cup/AddCup.vue";
 import CupList from "@/views/cup/CupList.vue";
 import CupTournament from "@/views/cup/CupTournament.vue";
-import GroupPlayOffForm from "@/views/groupPlayOff/GroupPlayOffForm.vue";
-import GroupPlayOffList from "@/views/groupPlayOff/GroupPlayOffList.vue";
-import GroupPlayOffTournament from "@/views/groupPlayOff/GroupPlayOffTournament.vue";
+import AddGroup from "@/views/group/AddGroup.vue";
+import GroupList from "@/views/group/GroupList.vue";
+import GroupTournament from "@/views/group/GroupTournament.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,7 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/league",
     name: "league",
-    component: LeagueForm,
+    component: AddLeague,
   },
   {
     path: "/league/list",
@@ -35,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/cup",
     name: "cup",
-    component: CupForm,
+    component: AddCup,
   },
   {
     path: "/cup/list",
@@ -49,23 +48,18 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/group-play-off",
-    name: "groupPlayOff",
-    component: GroupPlayOffForm,
+    name: "group",
+    component: AddGroup,
   },
   {
     path: "/group-play-off/list",
-    name: "groupPlayOffList",
-    component: GroupPlayOffList,
+    name: "groupList",
+    component: GroupList,
   },
   {
     path: "/group-play-off/:id",
-    name: "groupPlayOffTournament",
-    component: GroupPlayOffTournament,
-  },
-  {
-    path: "/match",
-    name: "match",
-    component: MatchView,
+    name: "groupTournament",
+    component: GroupTournament,
   },
 ];
 

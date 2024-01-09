@@ -8,7 +8,7 @@ type LeagueTournament = {
   user: User | undefined;
   matches: Match[];
   players: string[];
-  is_completed: boolean;
+  isCompleted: boolean;
 };
 
 export default LeagueTournament;

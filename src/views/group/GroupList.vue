@@ -1,7 +1,7 @@
 <template>
   <div class="container my-5 p-5 border">
     <div class="title">
-      <h1>Turnieje ligowe</h1>
+      <h1>Turnieje Grupa + Play-Off</h1>
     </div>
     <div class="list my-5">
       <div class="row fw-bold my-3">
@@ -12,16 +12,16 @@
         <div class="col-1">liczba graczy</div>
         <div class="col-2">status</div>
       </div>
-      <div class="row my-1" v-for="(league, index) in leagues" :key="index">
-        <div class="col-2">{{ league.name }}</div>
-        <div class="col-2">{{ league.date }}</div>
+      <div class="row my-1" v-for="(group, index) in groups" :key="index">
+        <div class="col-2">{{ group.name }}</div>
+        <div class="col-2">{{ group.date }}</div>
         <div class="col-3">
-          <router-link :to="league.id">{{ league.id }}</router-link>
+          <router-link :to="group.id">{{ group.id }}</router-link>
         </div>
-        <div class="col-2">{{ league.user?.name }}</div>
-        <div class="col-1">{{ league.playersNumber }}</div>
+        <div class="col-2">{{ group.user?.name }}</div>
+        <div class="col-1">{{ group.playersNumber }}</div>
         <div class="col-2">
-          {{ league.is_completed ? "zakończony" : "aktywny" }}
+          {{ group.isCompleted ? "zakończony" : "aktywny" }}
         </div>
       </div>
     </div>
@@ -29,34 +29,24 @@
 </template>
 
 <script setup lang="ts">
-import League from "@/types/league/League";
+import StatsList from "@/types/StatsList";
 import User from "@/types/User";
 import type { Ref } from "vue";
 import { ref, onMounted } from "vue";
 import db from "@/firebase/firebaseInit";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import "firebase/compat/firestore";
+import timestampToDate from "@/functions/timestampToDate";
 
 let users: Ref<User[]> = ref([]);
-let leagues: Ref<League[]> = ref([]);
+let groups: Ref<StatsList[]> = ref([]);
 
-const leaguesCollectionRef = collection(db, "league");
+const groupCollectionRef = collection(db, "group-play-off");
 const usersCollectionRef = collection(db, "users");
-const leaguesCollectionQuerry = query(
-  leaguesCollectionRef,
+const groupCollectionQuerry = query(
+  groupCollectionRef,
   orderBy("date", "desc")
 );
-
-function timestampToDate(timestamp: number): string {
-  let unix_timestamp = timestamp;
-  const date = new Date(unix_timestamp * 1000);
-  let day = String(date.getDate()).padStart(2, "0");
-  let month = String(date.getMonth() + 1).padStart(2, "0");
-  let year = date.getFullYear();
-  let fullDate = day + "." + month + "." + year;
-
-  return fullDate;
-}
 
 function getUsers(): void {
   onSnapshot(usersCollectionRef, (querySnapshot) => {
@@ -71,11 +61,11 @@ function getUsers(): void {
   });
 }
 
-function getLeagues(): void {
-  onSnapshot(leaguesCollectionQuerry, (querySnapshot) => {
-    const leagueStats: League[] = [];
+function getGroups(): void {
+  onSnapshot(groupCollectionQuerry, (querySnapshot) => {
+    const groupStats: StatsList[] = [];
     querySnapshot.forEach((doc) => {
-      const league = {
+      const groups = {
         name: doc.data().name,
         date: timestampToDate(doc.data().date?.seconds),
         id: doc.id,
@@ -83,16 +73,16 @@ function getLeagues(): void {
           (user: User) => user.id === doc.data().user_uuid
         ),
         playersNumber: doc.data().players.length,
-        is_completed: doc.data().is_completed,
+        isCompleted: doc.data().is_completed,
       };
-      leagueStats.push(league);
+      groupStats.push(groups);
     });
-    leagues.value = leagueStats;
+    groups.value = groupStats;
   });
 }
 
 onMounted(async () => {
   getUsers();
-  getLeagues();
+  getGroups();
 });
 </script>

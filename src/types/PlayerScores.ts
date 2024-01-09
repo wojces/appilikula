@@ -1,4 +1,4 @@
-type LeagueScore = {
+type PlayerScores = {
   name: string;
   matches: number;
   wins: number;
@@ -6,8 +6,8 @@ type LeagueScore = {
   lost: number;
   scoredGoals: number;
   lostGoals: number;
-  aggregateScoreline: number;
+  aggregateScore: number;
   points: number;
 };
 
-export default LeagueScore;
+export default PlayerScores;

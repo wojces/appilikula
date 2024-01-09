@@ -1,7 +1,7 @@
 <template>
   <form ref="form" class="container my-5 p-5 border">
     <div class="title">
-      <h1>Grupa + faza pucharowa</h1>
+      <h1>Liga</h1>
     </div>
     <div class="tournament-name text-start my-5">
       <label for="tournamentName" class="form-label fw-bold"
@@ -30,12 +30,12 @@
               required
             />
           </div>
-          <div v-if="index <= 3" class="col-1"></div>
+          <div v-if="index <= 2" class="col-1"></div>
           <div v-else class="col-1">
             <button
               type="button"
               class="btn btn btn-secondary"
-              @click="removePlayerInput(index)"
+              @click="removePlayersInput(index)"
             >
               X
             </button>
@@ -47,7 +47,7 @@
           :disabled="addPlayerDisability"
           type="button"
           class="btn btn btn-secondary my-3"
-          @click="addPlayerInput"
+          @click="addPlayersInput"
         >
           Dodaj gracza
         </button>
@@ -55,7 +55,7 @@
     </div>
     <div class="second-match form-check text-start my-3">
       <label class="form-check-label fw-bold" for="secondMatch">
-        Dwumecz w fazie grupowej
+        Dwumecz
       </label>
       <input
         class="form-check-input"
@@ -66,7 +66,7 @@
     </div>
     <div class="create-tournament">
       <button
-        @click.prevent="addGroupPlayOff"
+        @click.prevent="addLeague"
         type="submit"
         class="btn btn-secondary"
       >
@@ -84,35 +84,29 @@ import { collection, addDoc } from "firebase/firestore";
 import "firebase/compat/firestore";
 import firebase from "firebase/compat/app";
 import router from "@/router";
+import shuffle from "@/functions/shuffle";
 
-const groupPlayOffCollectionRef = collection(db, "group_play_off");
+const leagueCollectionRef = collection(db, "league");
 
 const form = ref(null);
 let name = ref("");
 let secondMatch = ref(false);
-let players: Ref<string[]> = ref(["", "", "", ""]);
+let players: Ref<string[]> = ref(["", "", ""]);
 let matches: Ref<Match[]> = ref([]);
 let userId = "8IVuu2jePfH031T3HWz0";
 
-const addPlayerDisability = computed(() => {
-  return players.value.length == 16;
+let addPlayerDisability = computed(() => {
+  return players.value.length == 20;
 });
 
-function addPlayerInput(): void {
-  if (players.value.length < 16) {
+function addPlayersInput(): void {
+  if (players.value.length < 20) {
     players.value.push("");
   }
 }
 
-function removePlayerInput(index: number): void {
+function removePlayersInput(index: number): void {
   players.value.splice(index, 1);
-}
-
-function shuffle(match: Match[]): void {
-  for (let i = match.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [match[i], match[j]] = [match[j], match[i]];
-  }
 }
 
 function addMatches(): void {
@@ -145,14 +139,14 @@ function addMatches(): void {
   matches.value = matchesArray.concat(secondMatchesArray);
 }
 
-async function addGroupPlayOff(): Promise<void> {
+async function addLeague(): Promise<void> {
   if (form.value && !(form.value as HTMLFormElement).checkValidity()) {
     (form.value as HTMLFormElement).reportValidity();
     return;
   }
 
   addMatches();
-  const docRef = await addDoc(groupPlayOffCollectionRef, {
+  const docRef = await addDoc(leagueCollectionRef, {
     date: firebase.firestore.FieldValue.serverTimestamp(),
     name: name.value,
     second_match: secondMatch.value,

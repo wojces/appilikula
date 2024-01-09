@@ -21,7 +21,7 @@
         <div class="col-2">{{ league.user?.name }}</div>
         <div class="col-1">{{ league.playersNumber }}</div>
         <div class="col-2">
-          {{ league.is_completed ? "zakończony" : "aktywny" }}
+          {{ league.isCompleted ? "zakończony" : "aktywny" }}
         </div>
       </div>
     </div>
@@ -29,31 +29,21 @@
 </template>
 
 <script setup lang="ts">
-import Cup from "@/types/cup/Cup";
+import StatsList from "@/types/StatsList";
 import User from "@/types/User";
 import type { Ref } from "vue";
 import { ref, onMounted } from "vue";
 import db from "@/firebase/firebaseInit";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import "firebase/compat/firestore";
+import timestampToDate from "@/functions/timestampToDate";
 
 let users: Ref<User[]> = ref([]);
-let cups: Ref<Cup[]> = ref([]);
+let cups: Ref<StatsList[]> = ref([]);
 
 const cupCollectionRef = collection(db, "cup");
 const usersCollectionRef = collection(db, "users");
 const cupCollectionQuerry = query(cupCollectionRef, orderBy("date", "desc"));
-
-function timestampToDate(timestamp: number): string {
-  let unix_timestamp = timestamp;
-  const date = new Date(unix_timestamp * 1000);
-  let day = String(date.getDate()).padStart(2, "0");
-  let month = String(date.getMonth() + 1).padStart(2, "0");
-  let year = date.getFullYear();
-  let fullDate = day + "." + month + "." + year;
-
-  return fullDate;
-}
 
 function getUsers(): void {
   onSnapshot(usersCollectionRef, (querySnapshot) => {
@@ -70,7 +60,7 @@ function getUsers(): void {
 
 function getCups(): void {
   onSnapshot(cupCollectionQuerry, (querySnapshot) => {
-    const cupStats: Cup[] = [];
+    const cupStats: StatsList[] = [];
     querySnapshot.forEach((doc) => {
       const cup = {
         name: doc.data().name,
@@ -80,7 +70,7 @@ function getCups(): void {
           (user: User) => user.id === doc.data().user_uuid
         ),
         playersNumber: doc.data().players.length,
-        is_completed: doc.data().is_completed,
+        isCompleted: doc.data().is_completed,
       };
       cupStats.push(cup);
     });

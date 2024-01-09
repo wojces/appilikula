@@ -1,22 +1,14 @@
 import User from "@/types/User";
-import Match from "../Match";
+import CupMatches from "@/types/cup/CupMatches";
 
 type CupTournament = {
   name: string;
   date: string;
   id: string;
   user: User | undefined;
-  matches: {
-    level1: Match[];
-    level2: Match[];
-    level3: Match[];
-    level4: Match[];
-    level1IsCompleted: boolean;
-    level2IsCompleted: boolean;
-    level3IsCompleted: boolean;
-  };
+  matches: CupMatches;
   players: string[];
-  is_completed: boolean;
+  isCompleted: boolean;
 };
 
 export default CupTournament;
