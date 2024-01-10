@@ -82,24 +82,24 @@ const emit = defineEmits<{
   "update:resultB": [result: number];
 }>();
 
-const resultA = computed({
+const resultA = computed<number>({
   get() {
     return props.resultA;
   },
-  set(result) {
+  set(result: number) {
     emit("update:resultA", result);
   },
 });
-const resultB = computed({
+const resultB = computed<number>({
   get() {
     return props.resultB;
   },
-  set(result) {
+  set(result: number) {
     emit("update:resultB", result);
   },
 });
 
-function invalidResultPlayerA(level: string) {
+function invalidResultPlayerA(level: string): string {
   if (level === "aSixteen" && !props.playerAResultIsValid)
     return "border border-danger";
   else if (level === "quarterFinal" && !props.playerAResultIsValid)
@@ -111,7 +111,7 @@ function invalidResultPlayerA(level: string) {
   else return "";
 }
 
-function invalidResultPlayerB(level: string) {
+function invalidResultPlayerB(level: string): string {
   if (level === "aSixteen" && !props.playerBResultIsValid)
     return "border border-danger";
   else if (level === "quarterFinal" && !props.playerBResultIsValid)

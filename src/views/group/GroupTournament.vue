@@ -336,7 +336,6 @@ import Match from "@/types/Match";
 import timestampToDate from "@/functions/timestampToDate";
 import updateGroupTable from "@/functions/group/updateGroupTable";
 import shuffle from "@/functions/shuffle";
-// import createGroupTable from "@/functions/group/createGroupTable";
 
 import { useRoute } from "vue-router";
 import { doc, onSnapshot, collection, updateDoc } from "firebase/firestore";
@@ -370,6 +369,18 @@ function tableColors(index: number) {
   if (index === 0 || index === 1) return "table-primary";
 }
 
+const defaultGroupPlayer: PlayerScores = {
+  name: "",
+  matches: 0,
+  wins: 0,
+  draws: 0,
+  lost: 0,
+  scoredGoals: 0,
+  lostGoals: 0,
+  aggregateScore: 0,
+  points: 0,
+};
+
 let group1TournamentPlayersScore = ref([] as PlayerScores[]);
 let group2TournamentPlayersScore = ref([] as PlayerScores[]);
 let group3TournamentPlayersScore = ref([] as PlayerScores[]);
@@ -380,7 +391,7 @@ let groupStageEndIsPossible = false;
 let groupStageWinners = ref([] as string[]);
 let groupStageSecondPlaces = ref([] as string[]);
 
-function findGroupStageWinners() {
+function findGroupStageWinners(): void {
   groupStageWinners.value.push(
     group1TournamentPlayersScore.value[0].name,
     group2TournamentPlayersScore.value[0].name
@@ -392,7 +403,7 @@ function findGroupStageWinners() {
     groupStageWinners.value.push(group4TournamentPlayersScore.value[0].name);
   }
 }
-function findGroupStageSecondPlaces() {
+function findGroupStageSecondPlaces(): void {
   groupStageSecondPlaces.value.push(
     group1TournamentPlayersScore.value[1].name,
     group2TournamentPlayersScore.value[1].name
@@ -441,49 +452,17 @@ function createTable(): void {
 
   // Group 1
   groupTournament.value.groupPlayers.group1.forEach((player: string) => {
-    let groupPlayer = {
-      name: player,
-      matches: 0,
-      wins: 0,
-      draws: 0,
-      lost: 0,
-      scoredGoals: 0,
-      lostGoals: 0,
-      get aggregateScore() {
-        return this.scoredGoals - this.lostGoals;
-      },
-      get points() {
-        return this.wins * 3 + this.draws * 1;
-      },
-    };
+    let groupPlayer = { ...defaultGroupPlayer };
+    groupPlayer.name = player;
     playersScore.push(groupPlayer);
   });
   group1TournamentPlayersScore.value = playersScore;
   playersScore = [];
 
-  // Wyprobować zamiast powtarzania ciagle calej funkcji
-  // createGroupTable(
-  //   groupTournament.value.groupPlayers.group1,
-  //   group1TournamentPlayersScore.value
-  // );
-
   // Group 2
   groupTournament.value.groupPlayers.group2.forEach((player: string) => {
-    let groupPlayer = {
-      name: player,
-      matches: 0,
-      wins: 0,
-      draws: 0,
-      lost: 0,
-      scoredGoals: 0,
-      lostGoals: 0,
-      get aggregateScore() {
-        return this.scoredGoals - this.lostGoals;
-      },
-      get points() {
-        return this.wins * 3 + this.draws * 1;
-      },
-    };
+    let groupPlayer = { ...defaultGroupPlayer };
+    groupPlayer.name = player;
     playersScore.push(groupPlayer);
   });
   group2TournamentPlayersScore.value = playersScore;
@@ -491,21 +470,8 @@ function createTable(): void {
 
   // Group 3
   groupTournament.value.groupPlayers.group3.forEach((player: string) => {
-    let groupPlayer = {
-      name: player,
-      matches: 0,
-      wins: 0,
-      draws: 0,
-      lost: 0,
-      scoredGoals: 0,
-      lostGoals: 0,
-      get aggregateScore() {
-        return this.scoredGoals - this.lostGoals;
-      },
-      get points() {
-        return this.wins * 3 + this.draws * 1;
-      },
-    };
+    let groupPlayer = { ...defaultGroupPlayer };
+    groupPlayer.name = player;
     playersScore.push(groupPlayer);
   });
   group3TournamentPlayersScore.value = playersScore;
@@ -513,21 +479,8 @@ function createTable(): void {
 
   // Group 4
   groupTournament.value.groupPlayers.group4.forEach((player: string) => {
-    let groupPlayer = {
-      name: player,
-      matches: 0,
-      wins: 0,
-      draws: 0,
-      lost: 0,
-      scoredGoals: 0,
-      lostGoals: 0,
-      get aggregateScore() {
-        return this.scoredGoals - this.lostGoals;
-      },
-      get points() {
-        return this.wins * 3 + this.draws * 1;
-      },
-    };
+    let groupPlayer = { ...defaultGroupPlayer };
+    groupPlayer.name = player;
     playersScore.push(groupPlayer);
   });
   group4TournamentPlayersScore.value = playersScore;
@@ -648,7 +601,7 @@ function endGroupStage(): void {
   window.scrollTo(0, 0);
 }
 
-function createValidationState() {
+function createValidationState(): void {
   let group1ValidationState = [] as ValidationState[];
   let group2ValidationState = [] as ValidationState[];
   let group3ValidationState = [] as ValidationState[];

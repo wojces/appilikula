@@ -217,7 +217,7 @@ let validationStateObject = ref({
   level3: [] as ValidationState[],
 });
 
-function createValidationState() {
+function createValidationState(): void {
   let level1ValidationState = [] as ValidationState[];
   let level2ValidationState = [] as ValidationState[];
   let level3ValidationState = [] as ValidationState[];
@@ -350,7 +350,7 @@ function clearPlayerBResultValidation(index: number, level: string): void {
   }
 }
 
-function finishQuarterFinals() {
+function finishQuarterFinals(): void {
   playOffTournament.value.matches.level1IsCompleted = true;
 
   let quarterFinalsWinners: string[] = [];
@@ -382,7 +382,7 @@ function finishQuarterFinals() {
   }
   quarterFinalsEndPosibility = false;
 }
-function finishSemiFinals() {
+function finishSemiFinals(): void {
   playOffTournament.value.matches.level2IsCompleted = true;
 
   let semiFinalsWinners: string[] = [];

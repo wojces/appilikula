@@ -160,7 +160,7 @@ let endIsPosible = ref(false);
 let resultIsValid = ref(true);
 let validationState = ref([] as ValidationState[]);
 
-function createValidationState() {
+function createValidationState(): void {
   let validationStateArray = [] as ValidationState[];
   leagueTournament.value.matches.forEach(() => {
     let matchResultIsValid = {
@@ -172,12 +172,12 @@ function createValidationState() {
   validationState.value = validationStateArray;
 }
 
-function invalidResultPlayerA(index: number) {
+function invalidResultPlayerA(index: number): string {
   if (!validationState.value[index].playerAResultIsValid)
     return "border border-danger";
   else return "";
 }
-function invalidResultPlayerB(index: number) {
+function invalidResultPlayerB(index: number): string {
   if (!validationState.value[index].playerBResultIsValid)
     return "border border-danger";
   else return "";
@@ -202,7 +202,7 @@ function clearPlayerBResultValidation(index: number): void {
   validationState.value[index].playerBResultIsValid = true;
 }
 
-function tableColors(index: number) {
+function tableColors(index: number): string | undefined {
   if (index === 0) return "table-warning";
   if (index === 1) return "table-secondary";
   if (index === 2) return "table-danger";
@@ -211,7 +211,7 @@ function tableColors(index: number) {
 function createTable(): void {
   const playersScore = [] as PlayerScores[];
   leagueTournament.value.players.forEach((player: string) => {
-    const leaguePlayer = {
+    const leaguePlayer: PlayerScores = {
       name: player,
       matches: 0,
       wins: 0,
@@ -219,12 +219,8 @@ function createTable(): void {
       lost: 0,
       scoredGoals: 0,
       lostGoals: 0,
-      get aggregateScore() {
-        return this.scoredGoals - this.lostGoals;
-      },
-      get points() {
-        return this.wins * 3 + this.draws * 1;
-      },
+      aggregateScore: 0,
+      points: 0,
     };
     playersScore.push(leaguePlayer);
   });
@@ -289,6 +285,20 @@ function updateTable(): void {
       leaguePlayersScore.value[playerBIndex].lostGoals =
         leaguePlayersScore.value[playerBIndex].lostGoals + match.player_a_score;
     }
+
+    leaguePlayersScore.value[playerAIndex].aggregateScore =
+      leaguePlayersScore.value[playerAIndex].scoredGoals -
+      leaguePlayersScore.value[playerAIndex].lostGoals;
+    leaguePlayersScore.value[playerAIndex].points =
+      leaguePlayersScore.value[playerAIndex].wins * 3 +
+      leaguePlayersScore.value[playerAIndex].draws * 1;
+
+    leaguePlayersScore.value[playerBIndex].aggregateScore =
+      leaguePlayersScore.value[playerBIndex].scoredGoals -
+      leaguePlayersScore.value[playerBIndex].lostGoals;
+    leaguePlayersScore.value[playerBIndex].points =
+      leaguePlayersScore.value[playerBIndex].wins * 3 +
+      leaguePlayersScore.value[playerAIndex].draws * 1;
   });
   leaguePlayersScore.value.sort((a: PlayerScores, b: PlayerScores) => {
     if (a.points !== b.points) {

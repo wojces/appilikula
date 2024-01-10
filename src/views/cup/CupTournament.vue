@@ -300,6 +300,11 @@ let validationStateObject = ref({
   level4: [] as ValidationState[],
 });
 
+let defaultValidMatchResult: ValidationState = {
+  playerAResultIsValid: true,
+  playerBResultIsValid: true,
+};
+
 function createValidationState() {
   let level1ValidationState = [] as ValidationState[];
   let level2ValidationState = [] as ValidationState[];
@@ -307,40 +312,28 @@ function createValidationState() {
   let level4ValidationState = [] as ValidationState[];
   if (cupTournament.value.matches.level1.length !== 0) {
     cupTournament.value.matches.level1.forEach(() => {
-      let matchResultIsValid = {
-        playerAResultIsValid: true,
-        playerBResultIsValid: true,
-      };
+      let matchResultIsValid = { ...defaultValidMatchResult };
       level1ValidationState.push(matchResultIsValid);
     });
     validationStateObject.value.level1 = level1ValidationState;
   }
   if (cupTournament.value.matches.level2.length !== 0) {
     cupTournament.value.matches.level2.forEach(() => {
-      let matchResultIsValid = {
-        playerAResultIsValid: true,
-        playerBResultIsValid: true,
-      };
+      let matchResultIsValid = { ...defaultValidMatchResult };
       level2ValidationState.push(matchResultIsValid);
     });
     validationStateObject.value.level2 = level2ValidationState;
   }
   if (cupTournament.value.matches.level3.length !== 0) {
     cupTournament.value.matches.level3.forEach(() => {
-      let matchResultIsValid = {
-        playerAResultIsValid: true,
-        playerBResultIsValid: true,
-      };
+      let matchResultIsValid = { ...defaultValidMatchResult };
       level3ValidationState.push(matchResultIsValid);
     });
     validationStateObject.value.level3 = level3ValidationState;
   }
   if (cupTournament.value.matches.level4.length !== 0) {
     cupTournament.value.matches.level4.forEach(() => {
-      let matchResultIsValid = {
-        playerAResultIsValid: true,
-        playerBResultIsValid: true,
-      };
+      let matchResultIsValid = { ...defaultValidMatchResult };
       level4ValidationState.push(matchResultIsValid);
     });
     validationStateObject.value.level4 = level4ValidationState;
@@ -353,10 +346,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "aSixteen" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level1[index].player_a_score
+      cupTournament.value.matches?.level1[index]?.player_a_score
     ) ||
-      cupTournament.value.matches.level1[index].player_a_score ===
-        cupTournament.value.matches.level1[index].player_b_score)
+      cupTournament.value.matches?.level1[index]?.player_a_score ===
+        cupTournament.value.matches?.level1[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level1[index].playerAResultIsValid = false;
@@ -364,10 +357,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "aSixteen" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level1[index].player_b_score
+      cupTournament.value.matches?.level1[index]?.player_b_score
     ) ||
-      cupTournament.value.matches.level1[index].player_a_score ===
-        cupTournament.value.matches.level1[index].player_b_score)
+      cupTournament.value.matches?.level1[index]?.player_a_score ===
+        cupTournament.value.matches?.level1[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level1[index].playerBResultIsValid = false;
@@ -376,10 +369,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "quarterFinal" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level2[index].player_a_score
+      cupTournament.value.matches?.level2[index]?.player_a_score
     ) ||
-      cupTournament.value.matches.level2[index].player_a_score ===
-        cupTournament.value.matches.level2[index].player_b_score)
+      cupTournament.value.matches?.level2[index]?.player_a_score ===
+        cupTournament.value.matches?.level2[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level2[index].playerAResultIsValid = false;
@@ -387,10 +380,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "quarterFinal" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level2[index].player_b_score
+      cupTournament.value.matches?.level2[index]?.player_b_score
     ) ||
-      cupTournament.value.matches.level2[index].player_a_score ===
-        cupTournament.value.matches.level2[index].player_b_score)
+      cupTournament.value.matches?.level2[index]?.player_a_score ===
+        cupTournament.value.matches?.level2[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level2[index].playerBResultIsValid = false;
@@ -399,10 +392,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "semiFinal" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level3[index].player_a_score
+      cupTournament.value.matches?.level3[index]?.player_a_score
     ) ||
-      cupTournament.value.matches.level3[index].player_a_score ===
-        cupTournament.value.matches.level3[index].player_b_score)
+      cupTournament.value.matches?.level3[index]?.player_a_score ===
+        cupTournament.value.matches?.level3[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level3[index].playerAResultIsValid = false;
@@ -410,10 +403,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "semiFinal" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level3[index].player_b_score
+      cupTournament.value.matches?.level3[index]?.player_b_score
     ) ||
-      cupTournament.value.matches.level3[index].player_a_score ===
-        cupTournament.value.matches.level3[index].player_b_score)
+      cupTournament.value.matches?.level3[index]?.player_a_score ===
+        cupTournament.value.matches?.level3[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level3[index].playerBResultIsValid = false;
@@ -422,10 +415,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "final" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level4[index].player_a_score
+      cupTournament.value.matches?.level4[index]?.player_a_score
     ) ||
-      cupTournament.value.matches.level4[index].player_a_score ===
-        cupTournament.value.matches.level4[index].player_b_score)
+      cupTournament.value.matches?.level4[index]?.player_a_score ===
+        cupTournament.value.matches?.level4[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level4[index].playerAResultIsValid = false;
@@ -433,10 +426,10 @@ function matchResultsValidation(index: number, level: string): void {
   if (
     level === "final" &&
     (!Number.isInteger(
-      cupTournament.value.matches.level4[index].player_b_score
+      cupTournament.value.matches?.level4[index]?.player_b_score
     ) ||
-      cupTournament.value.matches.level4[index].player_a_score ===
-        cupTournament.value.matches.level4[index].player_b_score)
+      cupTournament.value.matches?.level4[index]?.player_a_score ===
+        cupTournament.value.matches?.level4[index]?.player_b_score)
   ) {
     resultIsValid.value = false;
     validationStateObject.value.level4[index].playerBResultIsValid = false;

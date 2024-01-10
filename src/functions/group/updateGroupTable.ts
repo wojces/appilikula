@@ -53,6 +53,17 @@ function updateGroupTable(matches: Match[], playerScore: PlayerScores[]): void {
       playerScore[playerBIndex].lostGoals =
         playerScore[playerBIndex].lostGoals + match.player_a_score;
     }
+
+    playerScore[playerAIndex].aggregateScore =
+      playerScore[playerAIndex].scoredGoals -
+      playerScore[playerAIndex].lostGoals;
+    playerScore[playerAIndex].points =
+      playerScore[playerAIndex].wins * 3 + playerScore[playerAIndex].draws * 1;
+    playerScore[playerBIndex].aggregateScore =
+      playerScore[playerBIndex].scoredGoals -
+      playerScore[playerBIndex].lostGoals;
+    playerScore[playerBIndex].points =
+      playerScore[playerBIndex].wins * 3 + playerScore[playerAIndex].draws * 1;
   });
   playerScore.sort((a: PlayerScores, b: PlayerScores) => {
     if (a.points !== b.points) {
