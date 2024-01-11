@@ -1,12 +1,12 @@
 import User from "@/types/User";
 
-type LeagueList = {
+type StatsList = {
   name: string;
   date: string;
   id: string;
   user: User | undefined;
   playersNumber: number;
-  completed: boolean;
+  isCompleted: boolean;
 };
 
-export default LeagueList;
+export default StatsList;

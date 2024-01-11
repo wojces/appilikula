@@ -35,7 +35,7 @@
             <button
               type="button"
               class="btn btn btn-secondary"
-              @click="removePlayerInput(index)"
+              @click="removePlayersInput(index)"
             >
               X
             </button>
@@ -47,7 +47,7 @@
           :disabled="addPlayerDisability"
           type="button"
           class="btn btn btn-secondary my-3"
-          @click="addPlayerInput"
+          @click="addPlayersInput"
         >
           Dodaj gracza
         </button>
@@ -77,13 +77,14 @@
 </template>
 
 <script setup lang="ts">
-import SingleMatch from "@/types/SingleMatch";
-import { ref, Ref } from "vue";
+import Match from "@/types/Match";
+import { ref, Ref, computed } from "vue";
 import db from "@/firebase/firebaseInit";
 import { collection, addDoc } from "firebase/firestore";
 import "firebase/compat/firestore";
 import firebase from "firebase/compat/app";
 import router from "@/router";
+import shuffle from "@/functions/shuffle";
 
 const leagueCollectionRef = collection(db, "league");
 
@@ -91,41 +92,35 @@ const form = ref(null);
 let name = ref("");
 let secondMatch = ref(false);
 let players: Ref<string[]> = ref(["", "", ""]);
-let matches: Ref<SingleMatch[]> = ref([]);
+let matches: Ref<Match[]> = ref([]);
 let userId = "8IVuu2jePfH031T3HWz0";
-let addPlayerDisability = false;
 
-function addPlayerInput(): void {
+let addPlayerDisability = computed(() => {
+  return players.value.length == 20;
+});
+
+function addPlayersInput(): void {
   if (players.value.length < 20) {
     players.value.push("");
-  } else {
-    addPlayerDisability = true;
   }
 }
 
-function removePlayerInput(index: number): void {
+function removePlayersInput(index: number): void {
   players.value.splice(index, 1);
 }
 
-function shuffle(array: SingleMatch[]) {
-  for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
 function addMatches(): void {
-  let matchesArray: SingleMatch[] = [];
-  let secondMatchesArray: SingleMatch[] = [];
+  let matchesArray: Match[] = [];
+  let secondMatchesArray: Match[] = [];
 
   players.value.forEach((player: string, index: number) => {
     for (let j = index + 1; j < players.value.length; j++) {
-      let match: SingleMatch = {
+      let match: Match = {
         player_a: player,
         player_b: players.value[j],
         player_a_score: NaN,
         player_b_score: NaN,
-        played: false,
+        is_played: false,
       };
       matchesArray.push(match);
     }
@@ -158,9 +153,9 @@ async function addLeague(): Promise<void> {
     matches: matches.value,
     players: players.value,
     user_uuid: userId,
-    completed: false,
+    is_completed: false,
   });
-  console.log("Document written with ID: ", docRef.id);
+  console.log("League written with ID: ", docRef.id);
 
   const tournamentId: string = docRef.id;
   router.push("/league/" + tournamentId);

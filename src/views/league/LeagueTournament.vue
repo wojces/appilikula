@@ -8,7 +8,7 @@
         <p>Data utworzenia: {{ leagueTournament.date }}</p>
         <p>Utworzył: {{ leagueTournament.user?.name }}</p>
         <p>
-          Status: {{ leagueTournament.completed ? "Zakończony" : "Aktywny" }}
+          Status: {{ leagueTournament.isCompleted ? "Zakończony" : "Aktywny" }}
         </p>
       </div>
       <h1>Turniej: {{ leagueTournament.name }}</h1>
@@ -31,11 +31,7 @@
         </thead>
         <tbody>
           <tr
-            :class="{
-              'table-warning': index === 0,
-              'table-secondary': index === 1,
-              'table-danger': index === 2,
-            }"
+            :class="tableColors(index)"
             v-for="(player, index) in leaguePlayersScore"
             :key="index"
           >
@@ -46,7 +42,7 @@
             <td>{{ player.draws }}</td>
             <td>{{ player.lost }}</td>
             <td>{{ player.scoredGoals }}:{{ player.lostGoals }}</td>
-            <td>{{ player.goalBilans }}</td>
+            <td>{{ player.aggregateScore }}</td>
             <td class="fw-bold">{{ player.points }}</td>
           </tr>
         </tbody>
@@ -63,7 +59,6 @@
         <div class="col-1"></div>
       </div>
       <form
-        ref="form"
         class="row my-1"
         v-for="(match, index) in leagueTournament.matches"
         :key="index"
@@ -76,9 +71,10 @@
             min="0"
             max="99"
             class="form-control"
+            :class="invalidResultPlayerA(index)"
             v-model="leagueTournament.matches[index].player_a_score"
-            :disabled="leagueTournament.matches[index].played"
-            required
+            :disabled="leagueTournament.matches[index].is_played"
+            @blur="clearPlayerAResultValidation(index)"
           />
         </div>
         <div class="col-3">{{ match.player_b }}</div>
@@ -88,19 +84,20 @@
             min="0"
             max="99"
             class="form-control"
+            :class="invalidResultPlayerB(index)"
             v-model="leagueTournament.matches[index].player_b_score"
-            :disabled="leagueTournament.matches[index].played"
-            required
+            :disabled="leagueTournament.matches[index].is_played"
+            @blur="clearPlayerBResultValidation(index)"
           />
         </div>
         <div class="col-1">
-          <div v-if="leagueTournament.completed"></div>
+          <div v-if="leagueTournament.isCompleted"></div>
           <button
-            v-else-if="leagueTournament.matches[index].played"
+            v-else-if="leagueTournament.matches[index].is_played"
             class="btn btn-outline-secondary btn-sm"
             @click="restoreMatch(index)"
           >
-            Cofnij
+            ←
           </button>
           <button
             v-else
@@ -108,14 +105,25 @@
             class="btn btn-outline-success btn-sm"
             @click.prevent="updateMatch(index)"
           >
-            Zatwierdź
+            ✓
           </button>
+        </div>
+        <div
+          v-if="
+            !validationState[index].playerAResultIsValid ||
+            !validationState[index].playerBResultIsValid
+          "
+          class="error-message col-12 my-1"
+        >
+          <span class="text-danger">
+            Nie wprowadzono wyniku lub wprowadzono niepoprawny wynik
+          </span>
         </div>
       </form>
     </div>
     <div class="end-button">
       <button
-        v-if="endPosibility"
+        v-if="endIsPosible"
         class="btn btn-secondary btn-lg"
         @click="endTournament()"
       >
@@ -126,10 +134,12 @@
 </template>
 
 <script setup lang="ts">
-import LeagueScore from "@/types/league/LeagueScore";
+import PlayerScores from "@/types/PlayerScores";
 import LeagueTournament from "@/types/league/LeagueTournament";
 import User from "@/types/User";
-import SingleMatch from "@/types/SingleMatch";
+import Match from "@/types/Match";
+import ValidationState from "@/types/ValidationState";
+import timestampToDate from "@/functions/timestampToDate";
 
 import { useRoute } from "vue-router";
 import { doc, onSnapshot, collection, updateDoc } from "firebase/firestore";
@@ -140,18 +150,68 @@ const leaguesCollectionRef = collection(db, "league");
 const usersCollectionRef = collection(db, "users");
 
 let id: string | string[] = "";
-const form = ref(null);
 const route = useRoute();
 let leagueTournament = ref({} as LeagueTournament);
 let users: Ref<User[]> = ref([]);
 
-let leaguePlayersScore = ref([] as LeagueScore[]);
-let endPosibility = false;
+let leaguePlayersScore = ref([] as PlayerScores[]);
+let endIsPosible = ref(false);
+
+let resultIsValid = ref(true);
+let validationState = ref([] as ValidationState[]);
+
+function createValidationState(): void {
+  let validationStateArray = [] as ValidationState[];
+  leagueTournament.value.matches.forEach(() => {
+    let matchResultIsValid = {
+      playerAResultIsValid: true,
+      playerBResultIsValid: true,
+    };
+    validationStateArray.push(matchResultIsValid);
+  });
+  validationState.value = validationStateArray;
+}
+
+function invalidResultPlayerA(index: number): string {
+  if (!validationState.value[index].playerAResultIsValid)
+    return "border border-danger";
+  else return "";
+}
+function invalidResultPlayerB(index: number): string {
+  if (!validationState.value[index].playerBResultIsValid)
+    return "border border-danger";
+  else return "";
+}
+
+function matchResultsValidation(index: number): void {
+  resultIsValid.value = true;
+  if (!Number.isInteger(leagueTournament.value.matches[index].player_a_score)) {
+    resultIsValid.value = false;
+    validationState.value[index].playerAResultIsValid = false;
+  }
+  if (!Number.isInteger(leagueTournament.value.matches[index].player_b_score)) {
+    resultIsValid.value = false;
+    validationState.value[index].playerBResultIsValid = false;
+  }
+}
+
+function clearPlayerAResultValidation(index: number): void {
+  validationState.value[index].playerAResultIsValid = true;
+}
+function clearPlayerBResultValidation(index: number): void {
+  validationState.value[index].playerBResultIsValid = true;
+}
+
+function tableColors(index: number): string | undefined {
+  if (index === 0) return "table-warning";
+  if (index === 1) return "table-secondary";
+  if (index === 2) return "table-danger";
+}
 
 function createTable(): void {
-  const playersScore = [] as LeagueScore[];
+  const playersScore = [] as PlayerScores[];
   leagueTournament.value.players.forEach((player: string) => {
-    const leaguePlayer = {
+    const leaguePlayer: PlayerScores = {
       name: player,
       matches: 0,
       wins: 0,
@@ -159,12 +219,8 @@ function createTable(): void {
       lost: 0,
       scoredGoals: 0,
       lostGoals: 0,
-      get goalBilans() {
-        return this.scoredGoals - this.lostGoals;
-      },
-      get points() {
-        return this.wins * 3 + this.draws * 1;
-      },
+      aggregateScore: 0,
+      points: 0,
     };
     playersScore.push(leaguePlayer);
   });
@@ -172,12 +228,12 @@ function createTable(): void {
 }
 
 function updateTable(): void {
-  leagueTournament.value.matches.forEach((match: SingleMatch) => {
+  leagueTournament.value.matches.forEach((match: Match) => {
     let playerAIndex = leaguePlayersScore.value.findIndex(
-      (player: LeagueScore) => player.name === match.player_a
+      (player: PlayerScores) => player.name === match.player_a
     );
     let playerBIndex = leaguePlayersScore.value.findIndex(
-      (player: LeagueScore) => player.name === match.player_b
+      (player: PlayerScores) => player.name === match.player_b
     );
 
     if (match.player_a_score > match.player_b_score) {
@@ -229,31 +285,41 @@ function updateTable(): void {
       leaguePlayersScore.value[playerBIndex].lostGoals =
         leaguePlayersScore.value[playerBIndex].lostGoals + match.player_a_score;
     }
+
+    leaguePlayersScore.value[playerAIndex].aggregateScore =
+      leaguePlayersScore.value[playerAIndex].scoredGoals -
+      leaguePlayersScore.value[playerAIndex].lostGoals;
+    leaguePlayersScore.value[playerAIndex].points =
+      leaguePlayersScore.value[playerAIndex].wins * 3 +
+      leaguePlayersScore.value[playerAIndex].draws * 1;
+
+    leaguePlayersScore.value[playerBIndex].aggregateScore =
+      leaguePlayersScore.value[playerBIndex].scoredGoals -
+      leaguePlayersScore.value[playerBIndex].lostGoals;
+    leaguePlayersScore.value[playerBIndex].points =
+      leaguePlayersScore.value[playerBIndex].wins * 3 +
+      leaguePlayersScore.value[playerAIndex].draws * 1;
   });
-  leaguePlayersScore.value.sort((a: LeagueScore, b: LeagueScore) => {
+  leaguePlayersScore.value.sort((a: PlayerScores, b: PlayerScores) => {
     if (a.points !== b.points) {
       return b.points - a.points;
-    } else if (a.points === b.points && a.goalBilans === b.goalBilans) {
+    } else if (a.points === b.points && a.aggregateScore === b.aggregateScore) {
       return b.scoredGoals - a.scoredGoals;
     } else {
-      return b.goalBilans - a.goalBilans;
+      return b.aggregateScore - a.aggregateScore;
     }
   });
 }
 
 function updateMatch(index: number): void {
-  if (
-    form.value &&
-    form.value[index] &&
-    !(form.value[index] as HTMLFormElement).checkValidity()
-  ) {
-    (form.value[index] as HTMLFormElement).reportValidity();
+  matchResultsValidation(index);
+  if (!resultIsValid.value) {
     return;
   }
 
-  leagueTournament.value.matches[index].played = true;
-  endPosibility = leagueTournament.value.matches.every(
-    (match: SingleMatch) => match.played === true
+  leagueTournament.value.matches[index].is_played = true;
+  endIsPosible.value = leagueTournament.value.matches.every(
+    (match: Match) => match.is_played === true
   );
   if (typeof id === "string") {
     updateLeague(id);
@@ -261,34 +327,23 @@ function updateMatch(index: number): void {
 }
 
 function restoreMatch(index: number): void {
-  leagueTournament.value.matches[index].played = false;
+  leagueTournament.value.matches[index].is_played = false;
 }
 
 async function updateLeague(id: string): Promise<void> {
   await updateDoc(doc(leaguesCollectionRef, id), {
-    completed: leagueTournament.value.completed,
+    is_completed: leagueTournament.value.isCompleted,
     matches: leagueTournament.value.matches,
   });
 }
 
 function endTournament(): void {
-  leagueTournament.value.completed = true;
+  leagueTournament.value.isCompleted = true;
   if (typeof id === "string") {
     updateLeague(id);
   }
-  endPosibility = false;
+  endIsPosible.value = false;
   window.scrollTo(0, 0);
-}
-
-function timestampToDate(timestamp: number): string {
-  let unix_timestamp = timestamp;
-  const date = new Date(unix_timestamp * 1000);
-  let day = String(date.getDate()).padStart(2, "0");
-  let month = String(date.getMonth() + 1).padStart(2, "0");
-  let year = date.getFullYear();
-  let fullDate = day + "." + month + "." + year;
-
-  return fullDate;
 }
 
 function getUsers(): void {
@@ -313,10 +368,11 @@ function getLeagueTournament(id: string): void {
       user: users.value.find((user: User) => user.id === doc.data()?.user_uuid),
       matches: doc.data()?.matches,
       players: doc.data()?.players,
-      completed: doc.data()?.completed,
+      isCompleted: doc.data()?.is_completed,
     };
     createTable();
     updateTable();
+    createValidationState();
   });
 }
 
@@ -329,17 +385,4 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss">
-// .table-league {
-//   tr:first-child td {
-//     background-color: rgb(255, 255, 142);
-//   }
-//   tr:nth-child(2) td {
-//     background-color: rgb(204, 204, 204);
-//   }
-//   tr:nth-child(3) td {
-//     background-color: rgb(141, 47, 47);
-//   }
-// }
-// zadanie domowe: sprawdzić jak odwołać się do second i third child i pokolorować pole
-</style>
+<style lang="scss"></style>

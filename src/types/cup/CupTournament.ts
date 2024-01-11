@@ -1,14 +1,14 @@
 import User from "@/types/User";
-import Match from "../Match";
+import CupMatches from "@/types/cup/CupMatches";
 
-type LeagueTournament = {
+type CupTournament = {
   name: string;
   date: string;
   id: string;
   user: User | undefined;
-  matches: Match[];
+  matches: CupMatches;
   players: string[];
   isCompleted: boolean;
 };
 
-export default LeagueTournament;
+export default CupTournament;

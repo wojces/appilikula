@@ -1,7 +1,7 @@
 <template>
   <div class="container my-5 p-5 border">
     <div class="title">
-      <h1>Turnieje ligowe</h1>
+      <h1>Puchary</h1>
     </div>
     <div class="list my-5">
       <div class="row fw-bold my-3">
@@ -12,7 +12,7 @@
         <div class="col-1">liczba graczy</div>
         <div class="col-2">status</div>
       </div>
-      <div class="row my-1" v-for="(league, index) in leagues" :key="index">
+      <div class="row my-1" v-for="(league, index) in cups" :key="index">
         <div class="col-2">{{ league.name }}</div>
         <div class="col-2">{{ league.date }}</div>
         <div class="col-3">
@@ -39,14 +39,11 @@ import "firebase/compat/firestore";
 import timestampToDate from "@/functions/timestampToDate";
 
 let users: Ref<User[]> = ref([]);
-let leagues: Ref<StatsList[]> = ref([]);
+let cups: Ref<StatsList[]> = ref([]);
 
-const leaguesCollectionRef = collection(db, "league");
+const cupCollectionRef = collection(db, "cup");
 const usersCollectionRef = collection(db, "users");
-const leaguesCollectionQuerry = query(
-  leaguesCollectionRef,
-  orderBy("date", "desc")
-);
+const cupCollectionQuerry = query(cupCollectionRef, orderBy("date", "desc"));
 
 function getUsers(): void {
   onSnapshot(usersCollectionRef, (querySnapshot) => {
@@ -61,11 +58,11 @@ function getUsers(): void {
   });
 }
 
-function getLeagues(): void {
-  onSnapshot(leaguesCollectionQuerry, (querySnapshot) => {
-    const leagueStats: StatsList[] = [];
+function getCups(): void {
+  onSnapshot(cupCollectionQuerry, (querySnapshot) => {
+    const cupStats: StatsList[] = [];
     querySnapshot.forEach((doc) => {
-      const league = {
+      const cup = {
         name: doc.data().name,
         date: timestampToDate(doc.data().date?.seconds),
         id: doc.id,
@@ -75,14 +72,14 @@ function getLeagues(): void {
         playersNumber: doc.data().players.length,
         isCompleted: doc.data().is_completed,
       };
-      leagueStats.push(league);
+      cupStats.push(cup);
     });
-    leagues.value = leagueStats;
+    cups.value = cupStats;
   });
 }
 
 onMounted(async () => {
   getUsers();
-  getLeagues();
+  getCups();
 });
 </script>

@@ -1,13 +1,9 @@
-import User from "@/types/User";
-type Match = {
-  match_id: string;
-  date: string;
-  player_a_uuid: string;
-  player_b_uuid: string;
+type SingleMatch = {
+  player_a: string;
+  player_b: string;
   player_a_score: number;
   player_b_score: number;
-  playerA: User | undefined;
-  playerB: User | undefined;
+  is_played: boolean;
 };
 
-export default Match;
+export default SingleMatch;
