@@ -30,11 +30,13 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="/appilikula/league">Zagraj</a>
+                <router-link class="dropdown-item" to="/league"
+                  >Zagraj
+                </router-link>
               </li>
               <li>
-                <a class="dropdown-item" href="/appilikula/league/list"
-                  >Lista</a
+                <router-link class="dropdown-item" to="/league/list"
+                  >Lista</router-link
                 >
               </li>
             </ul>
@@ -50,10 +52,14 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="/appilikula/cup">Zagraj</a>
+                <router-link class="dropdown-item" to="/cup"
+                  >Zagraj</router-link
+                >
               </li>
               <li>
-                <a class="dropdown-item" href="/appilikula/cup/list">Lista</a>
+                <router-link class="dropdown-item" to="/cup/list"
+                  >Lista</router-link
+                >
               </li>
             </ul>
           </li>
@@ -68,13 +74,13 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="/appilikula/group-play-off"
-                  >Zagraj</a
+                <router-link class="dropdown-item" to="/group-play-off"
+                  >Zagraj</router-link
                 >
               </li>
               <li>
-                <a class="dropdown-item" href="/appilikula/group-play-off/list"
-                  >Lista</a
+                <router-link class="dropdown-item" to="/group-play-off/list"
+                  >Lista</router-link
                 >
               </li>
             </ul>
