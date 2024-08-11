@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-5 p-5 border">
+  <div class="container p-5 border">
     <div class="title">
       <h1>Turnieje ligowe</h1>
     </div>

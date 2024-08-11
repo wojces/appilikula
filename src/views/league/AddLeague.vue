@@ -1,5 +1,5 @@
 <template>
-  <form ref="form" class="container my-5 p-5 border">
+  <form ref="form" class="container p-5 border">
     <div class="title">
       <h1>Liga</h1>
     </div>
@@ -13,8 +13,7 @@
         id="tournamentName"
         placeholder="Podaj nazwę turnieju..."
         v-model="name"
-        required
-      />
+        required />
     </div>
     <div class="players text-start">
       <label for="players" class="form-label fw-bold">Gracze</label>
@@ -27,16 +26,14 @@
               id="players"
               placeholder="Podaj imię gracza..."
               v-model="players[index]"
-              required
-            />
+              required />
           </div>
           <div v-if="index <= 2" class="col-1"></div>
           <div v-else class="col-1">
             <button
               type="button"
               class="btn btn btn-secondary"
-              @click="removePlayersInput(index)"
-            >
+              @click="removePlayersInput(index)">
               X
             </button>
           </div>
@@ -47,8 +44,7 @@
           :disabled="addPlayerDisability"
           type="button"
           class="btn btn btn-secondary my-3"
-          @click="addPlayersInput"
-        >
+          @click="addPlayersInput">
           Dodaj gracza
         </button>
       </div>
@@ -61,15 +57,13 @@
         class="form-check-input"
         type="checkbox"
         id="secondMatch"
-        v-model="secondMatch"
-      />
+        v-model="secondMatch" />
     </div>
     <div class="create-tournament">
       <button
         @click.prevent="addLeague"
         type="submit"
-        class="btn btn-secondary"
-      >
+        class="btn btn-secondary">
         Utwórz turniej
       </button>
     </div>
@@ -93,7 +87,7 @@ let name = ref("");
 let secondMatch = ref(false);
 let players: Ref<string[]> = ref(["", "", ""]);
 let matches: Ref<Match[]> = ref([]);
-let userId = "8IVuu2jePfH031T3HWz0";
+let userId = "tqH9guVSEhrST0syb5Q0";
 
 let addPlayerDisability = computed(() => {
   return players.value.length == 20;
@@ -155,7 +149,7 @@ async function addLeague(): Promise<void> {
     user_uuid: userId,
     is_completed: false,
   });
-  console.log("League written with ID: ", docRef.id);
+  // console.log("League written with ID: ", docRef.id);
 
   const tournamentId: string = docRef.id;
   router.push("/league/" + tournamentId);

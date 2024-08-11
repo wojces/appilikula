@@ -13,8 +13,7 @@
         data-bs-toggle="collapse"
         data-bs-target="#navmenu"
         aria-cotrols="navmenu"
-        aria-expanded="true"
-      >
+        aria-expanded="true">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -26,8 +25,7 @@
               href="#"
               role="button"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+              aria-expanded="false">
               Liga
             </a>
             <ul class="dropdown-menu">
@@ -43,8 +41,7 @@
               href="#"
               role="button"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+              aria-expanded="false">
               Puchar
             </a>
             <ul class="dropdown-menu">
@@ -60,8 +57,7 @@
               href="#"
               role="button"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+              aria-expanded="false">
               Grupa + Play-Off
             </a>
             <ul class="dropdown-menu">
@@ -72,9 +68,6 @@
                 <a class="dropdown-item" href="/group-play-off/list">Lista</a>
               </li>
             </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled">Wyloguj</a>
           </li>
         </ul>
       </div>
@@ -96,9 +89,31 @@
   text-align: center;
 }
 
+.navbar {
+  box-shadow: 0 0.5px 5px #394955;
+}
+
 nav {
   a {
     text-decoration: none;
   }
+}
+
+.navbar-brand {
+  font-size: 2rem;
+  margin: 0 1rem;
+}
+
+.nav-item {
+  margin: 0 0.5rem;
+  font-size: 1.2rem;
+  border: 1px solid black transparent;
+  border-radius: 5px;
+}
+
+.nav-item:hover,
+.nav-item:active {
+  background-color: #a0a9b2;
+  border: 1px solid none;
 }
 </style>

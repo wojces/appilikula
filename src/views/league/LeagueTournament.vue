@@ -1,8 +1,7 @@
 <template>
   <div
     v-if="Object.keys(leagueTournament) && Object.keys(leagueTournament).length"
-    class="container my-5 p-5 border"
-  >
+    class="container p-5 border">
     <div class="title">
       <div class="d-flex flex-row gap-3 description">
         <p>Data utworzenia: {{ leagueTournament.date }}</p>
@@ -33,8 +32,7 @@
           <tr
             :class="tableColors(index)"
             v-for="(player, index) in leaguePlayersScore"
-            :key="index"
-          >
+            :key="index">
             <td scope="row">{{ index + 1 }}</td>
             <td>{{ player.name }}</td>
             <td>{{ player.matches }}</td>
@@ -61,8 +59,7 @@
       <form
         class="row my-1"
         v-for="(match, index) in leagueTournament.matches"
-        :key="index"
-      >
+        :key="index">
         <div class="col-1">{{ index + 1 }}</div>
         <div class="col-3">{{ match.player_a }}</div>
         <div class="col-2">
@@ -74,8 +71,7 @@
             :class="invalidResultPlayerA(index)"
             v-model="leagueTournament.matches[index].player_a_score"
             :disabled="leagueTournament.matches[index].is_played"
-            @blur="clearPlayerAResultValidation(index)"
-          />
+            @blur="clearPlayerAResultValidation(index)" />
         </div>
         <div class="col-3">{{ match.player_b }}</div>
         <div class="col-2">
@@ -87,24 +83,21 @@
             :class="invalidResultPlayerB(index)"
             v-model="leagueTournament.matches[index].player_b_score"
             :disabled="leagueTournament.matches[index].is_played"
-            @blur="clearPlayerBResultValidation(index)"
-          />
+            @blur="clearPlayerBResultValidation(index)" />
         </div>
         <div class="col-1">
           <div v-if="leagueTournament.isCompleted"></div>
           <button
             v-else-if="leagueTournament.matches[index].is_played"
             class="btn btn-outline-secondary btn-sm"
-            @click="restoreMatch(index)"
-          >
+            @click="restoreMatch(index)">
             ←
           </button>
           <button
             v-else
             type="submit"
             class="btn btn-outline-success btn-sm"
-            @click.prevent="updateMatch(index)"
-          >
+            @click.prevent="updateMatch(index)">
             ✓
           </button>
         </div>
@@ -113,8 +106,7 @@
             !validationState[index].playerAResultIsValid ||
             !validationState[index].playerBResultIsValid
           "
-          class="error-message col-12 my-1"
-        >
+          class="error-message col-12 my-1">
           <span class="text-danger">
             Nie wprowadzono wyniku lub wprowadzono niepoprawny wynik
           </span>
@@ -125,8 +117,7 @@
       <button
         v-if="endIsPosible"
         class="btn btn-secondary btn-lg"
-        @click="endTournament()"
-      >
+        @click="endTournament()">
         Zakończ turniej
       </button>
     </div>

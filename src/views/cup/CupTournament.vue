@@ -1,8 +1,7 @@
 <template>
   <div
     v-if="Object.keys(cupTournament) && Object.keys(cupTournament).length"
-    class="container my-5 p-5 border"
-  >
+    class="container p-5 border">
     <div class="title">
       <div class="d-flex flex-row gap-3 description">
         <p>Data utworzenia: {{ cupTournament.date }}</p>
@@ -20,8 +19,7 @@
         <div
           v-if="cupTournament.matches.level1.length === 8"
           class="col-3"
-          :class="numberOfLevels"
-        >
+          :class="numberOfLevels">
           1/16
         </div>
         <div
@@ -30,8 +28,7 @@
             cupTournament.matches.level1.length === 8
           "
           class="col-3"
-          :class="numberOfLevels"
-        >
+          :class="numberOfLevels">
           ćwierćfinał
         </div>
         <div class="col-3" :class="numberOfLevels">półfinał</div>
@@ -43,13 +40,11 @@
         <div
           class="a-sixteen col-3"
           v-if="cupTournament.matches.level1.length === 8"
-          :class="numberOfLevels"
-        >
+          :class="numberOfLevels">
           <form
             class="row my-3 py-1 border rounded-4 align-items-center d-flex justify-content-evenly"
             v-for="(match, index) in cupTournament.matches.level1"
-            :key="index"
-          >
+            :key="index">
             <CupCompetition
               :index="index"
               :match="match"
@@ -70,15 +65,13 @@
                 clearPlayerBResultValidation(index, 'aSixteen')
               "
               v-model:result-a="match.player_a_score"
-              v-model:result-b="match.player_b_score"
-            ></CupCompetition>
+              v-model:result-b="match.player_b_score"></CupCompetition>
             <div
               v-if="
                 !validationStateObject.level1[index]?.playerAResultIsValid ||
                 !validationStateObject.level1[index]?.playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik, remis lub brak wyniku
               </span>
@@ -92,13 +85,11 @@
             cupTournament.matches.level2.length === 4 ||
             cupTournament.matches.level1.length === 8
           "
-          :class="numberOfLevels"
-        >
+          :class="numberOfLevels">
           <form
             class="row my-3 py-1 border rounded-4 align-items-center d-flex justify-content-evenly"
             v-for="(match, index) in cupTournament.matches.level2"
-            :key="index"
-          >
+            :key="index">
             <CupCompetition
               :index="index"
               :match="match"
@@ -119,15 +110,13 @@
                 clearPlayerBResultValidation(index, 'quarterFinal')
               "
               v-model:result-a="match.player_a_score"
-              v-model:result-b="match.player_b_score"
-            ></CupCompetition>
+              v-model:result-b="match.player_b_score"></CupCompetition>
             <div
               v-if="
                 !validationStateObject.level2[index]?.playerAResultIsValid ||
                 !validationStateObject.level2[index]?.playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik, remis lub brak wyniku
               </span>
@@ -137,13 +126,11 @@
         <!-- semi-final competition -->
         <div
           class="semi-final col-3 d-flex flex-column justify-content-around"
-          :class="numberOfLevels"
-        >
+          :class="numberOfLevels">
           <form
             class="row my-3 py-1 border rounded-4 align-items-center d-flex justify-content-evenly"
             v-for="(match, index) in cupTournament.matches.level3"
-            :key="index"
-          >
+            :key="index">
             <CupCompetition
               :index="index"
               :match="match"
@@ -164,15 +151,13 @@
                 clearPlayerBResultValidation(index, 'semiFinal')
               "
               v-model:result-a="match.player_a_score"
-              v-model:result-b="match.player_b_score"
-            ></CupCompetition>
+              v-model:result-b="match.player_b_score"></CupCompetition>
             <div
               v-if="
                 !validationStateObject.level3[index]?.playerAResultIsValid ||
                 !validationStateObject.level3[index]?.playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik, remis lub brak wyniku
               </span>
@@ -182,13 +167,11 @@
         <!-- final competition -->
         <div
           class="final col-3 d-flex flex-column justify-content-center"
-          :class="numberOfLevels"
-        >
+          :class="numberOfLevels">
           <form
             class="row my-3 py-1 border rounded-4 align-items-center d-flex justify-content-evenly"
             v-for="(match, index) in cupTournament.matches.level4"
-            :key="index"
-          >
+            :key="index">
             <CupCompetition
               :index="index"
               :match="match"
@@ -209,15 +192,13 @@
                 clearPlayerBResultValidation(index, 'final')
               "
               v-model:result-a="match.player_a_score"
-              v-model:result-b="match.player_b_score"
-            ></CupCompetition>
+              v-model:result-b="match.player_b_score"></CupCompetition>
             <div
               v-if="
                 !validationStateObject.level4[index]?.playerAResultIsValid ||
                 !validationStateObject.level4[index]?.playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik, remis lub brak wyniku
               </span>
@@ -230,29 +211,25 @@
       <button
         v-if="aSixteenEndPosibility"
         class="btn btn-secondary btn-lg"
-        @click="finishASixteen"
-      >
+        @click="finishASixteen">
         Przejdź do ćwierćfinałów
       </button>
       <button
         v-if="quarterFinalsEndPosibility"
         class="btn btn-secondary btn-lg"
-        @click="finishQuarterFinals"
-      >
+        @click="finishQuarterFinals">
         Przejdź do półfinałów
       </button>
       <button
         v-if="semiFinalsEndPosibility"
         class="btn btn-secondary btn-lg"
-        @click="finishSemiFinals"
-      >
+        @click="finishSemiFinals">
         Przejdź do finału
       </button>
       <button
         v-if="endPosibility"
         class="btn btn-secondary btn-lg"
-        @click="endTournament"
-      >
+        @click="endTournament">
         Zakończ turniej
       </button>
     </div>

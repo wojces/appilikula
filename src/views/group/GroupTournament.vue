@@ -1,8 +1,7 @@
 <template>
   <div
     v-if="Object.keys(groupTournament) && Object.keys(groupTournament).length"
-    class="container my-5 p-5 border"
-  >
+    class="container p-5 border">
     <div class="title">
       <div class="d-flex flex-row gap-3 description">
         <p>Data utworzenia: {{ groupTournament.date }}</p>
@@ -18,8 +17,7 @@
           type="button"
           class="btn btn-outline-secondary"
           :class="{ active: groupStageIsActive }"
-          @click="switchTournamentStage('group')"
-        >
+          @click="switchTournamentStage('group')">
           Faza grupowa
         </button>
         <button
@@ -29,8 +27,7 @@
             active: !groupStageIsActive,
             disabled: !groupTournament.groupStageIsCompleted,
           }"
-          @click="switchTournamentStage('playoff')"
-        >
+          @click="switchTournamentStage('playoff')">
           Faza pucharowa
         </button>
       </div>
@@ -46,13 +43,11 @@
             <tbody
               :class="tableColors(index)"
               v-for="(player, index) in group1TournamentPlayersScore"
-              :key="index"
-            >
+              :key="index">
               <GroupTableBody
                 :index="index"
                 :player="player"
-                @table-colors="tableColors(index)"
-              ></GroupTableBody>
+                @table-colors="tableColors(index)"></GroupTableBody>
             </tbody>
           </table>
         </div>
@@ -65,21 +60,18 @@
             <tbody
               :class="tableColors(index)"
               v-for="(player, index) in group2TournamentPlayersScore"
-              :key="index"
-            >
+              :key="index">
               <GroupTableBody
                 :index="index"
                 :player="player"
-                @table-colors="tableColors(index)"
-              ></GroupTableBody>
+                @table-colors="tableColors(index)"></GroupTableBody>
             </tbody>
           </table>
         </div>
       </div>
       <div
         class="secondTablesRow row my-5"
-        v-if="groupTournament.groupPlayers.group3.length !== 0"
-      >
+        v-if="groupTournament.groupPlayers.group3.length !== 0">
         <div class="group3 col-6">
           <h5 class="fw-bold mb-4">Tabela - Grupa 3</h5>
           <table class="table table-league">
@@ -89,13 +81,11 @@
             <tbody
               :class="tableColors(index)"
               v-for="(player, index) in group3TournamentPlayersScore"
-              :key="index"
-            >
+              :key="index">
               <GroupTableBody
                 :index="index"
                 :player="player"
-                @table-colors="tableColors(index)"
-              ></GroupTableBody>
+                @table-colors="tableColors(index)"></GroupTableBody>
             </tbody>
           </table>
         </div>
@@ -108,13 +98,11 @@
             <tbody
               :class="tableColors(index)"
               v-for="(player, index) in group4TournamentPlayersScore"
-              :key="index"
-            >
+              :key="index">
               <GroupTableBody
                 :index="index"
                 :player="player"
-                @table-colors="tableColors(index)"
-              ></GroupTableBody>
+                @table-colors="tableColors(index)"></GroupTableBody>
             </tbody>
           </table>
         </div>
@@ -126,8 +114,7 @@
           <form
             class="row my-1"
             v-for="(match, index) in groupTournament.groupMatches.group1"
-            :key="index"
-          >
+            :key="index">
             <GroupMatchesBody
               :index="index"
               :match="match"
@@ -148,15 +135,13 @@
               "
               @clear-player-b-result-validation="
                 clearPlayerBResultValidation(index, 'group1')
-              "
-            ></GroupMatchesBody>
+              "></GroupMatchesBody>
             <div
               v-if="
                 !validationStateObject.group1[index].playerAResultIsValid ||
                 !validationStateObject.group1[index].playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik lub brak wyniku
               </span>
@@ -169,8 +154,7 @@
           <form
             class="row my-1"
             v-for="(match, index) in groupTournament.groupMatches.group2"
-            :key="index"
-          >
+            :key="index">
             <GroupMatchesBody
               :index="index"
               :match="match"
@@ -191,15 +175,13 @@
               "
               @clear-player-b-result-validation="
                 clearPlayerBResultValidation(index, 'group2')
-              "
-            ></GroupMatchesBody>
+              "></GroupMatchesBody>
             <div
               v-if="
                 !validationStateObject.group2[index].playerAResultIsValid ||
                 !validationStateObject.group2[index].playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik lub brak wyniku
               </span>
@@ -209,16 +191,14 @@
       </div>
       <div
         class="secondMatchesRow row my-5"
-        v-if="groupTournament.groupPlayers.group3.length !== 0"
-      >
+        v-if="groupTournament.groupPlayers.group3.length !== 0">
         <div class="group3 col-6">
           <h5 class="fw-bold mb-4">Mecze - Grupa 3</h5>
           <GroupMatchesHead></GroupMatchesHead>
           <form
             class="row my-1"
             v-for="(match, index) in groupTournament.groupMatches.group3"
-            :key="index"
-          >
+            :key="index">
             <GroupMatchesBody
               :index="index"
               :match="match"
@@ -239,15 +219,13 @@
               "
               @clear-player-b-result-validation="
                 clearPlayerBResultValidation(index, 'group3')
-              "
-            ></GroupMatchesBody>
+              "></GroupMatchesBody>
             <div
               v-if="
                 !validationStateObject.group3[index].playerAResultIsValid ||
                 !validationStateObject.group3[index].playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik lub brak wyniku
               </span>
@@ -260,8 +238,7 @@
           <form
             class="row my-1"
             v-for="(match, index) in groupTournament.groupMatches.group4"
-            :key="index"
-          >
+            :key="index">
             <GroupMatchesBody
               :index="index"
               :match="match"
@@ -282,15 +259,13 @@
               "
               @clear-player-b-result-validation="
                 clearPlayerBResultValidation(index, 'group4')
-              "
-            ></GroupMatchesBody>
+              "></GroupMatchesBody>
             <div
               v-if="
                 !validationStateObject.group4[index].playerAResultIsValid ||
                 !validationStateObject.group4[index].playerBResultIsValid
               "
-              class="error-message col-12 my-1"
-            >
+              class="error-message col-12 my-1">
               <span class="text-danger">
                 Wprowadzono niepoprawny wynik lub brak wyniku
               </span>
@@ -307,15 +282,13 @@
       <button
         v-if="tournamentEndIsPossible"
         class="btn btn-secondary btn-lg"
-        @click="endTournament()"
-      >
+        @click="endTournament()">
         Zakończ turniej
       </button>
       <button
         v-if="groupStageEndIsPossible"
         class="btn btn-secondary btn-lg"
-        @click="endGroupStage()"
-      >
+        @click="endGroupStage()">
         Zakończ fazę grupową i przejdź do pucharowej
       </button>
     </div>
