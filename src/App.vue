@@ -29,9 +29,13 @@
               Liga
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/league">Zagraj</a></li>
               <li>
-                <a class="dropdown-item" href="/league/list">Lista</a>
+                <a class="dropdown-item" href="/appilikula/league">Zagraj</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/appilikula/league/list"
+                  >Lista</a
+                >
               </li>
             </ul>
           </li>
@@ -45,9 +49,11 @@
               Puchar
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/cup">Zagraj</a></li>
               <li>
-                <a class="dropdown-item" href="/cup/list">Lista</a>
+                <a class="dropdown-item" href="/appilikula/cup">Zagraj</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/appilikula/cup/list">Lista</a>
               </li>
             </ul>
           </li>
@@ -62,10 +68,14 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="/group-play-off">Zagraj</a>
+                <a class="dropdown-item" href="/appilikula/group-play-off"
+                  >Zagraj</a
+                >
               </li>
               <li>
-                <a class="dropdown-item" href="/group-play-off/list">Lista</a>
+                <a class="dropdown-item" href="/appilikula/group-play-off/list"
+                  >Lista</a
+                >
               </li>
             </ul>
           </li>
